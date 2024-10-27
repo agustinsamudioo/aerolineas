@@ -5,29 +5,38 @@ import java.util.HashMap;
 public class AerolineaBondiJet {
 	
 	String nombre;
-	int cuit;
+	String cuit;
 	private HashMap<Integer,Cliente> clientes;
-	//Map<Vuelo,Vuelo> vuelos;
-	//Map<Pasajero,Pasaje> pasajes;
-	//Map<Aeropuerto,Aeropuerto> aeropuertos;
+	private HashMap<Integer,Vuelo> vuelos;
+	private HashMap<Integer,Pasaje> pasajes;
+	private HashMap<Integer,Pasajero> pasajeros;
+	private HashMap<String,Aeropuerto> aeropuertos;
 	
-	
-	
-	public AerolineaBondiJet() {
-		
-		this.nombre="BondiJet";
-		this.cuit=1234;
+
+	public AerolineaBondiJet(String nombre, String cuit) {
+		this.nombre=nombre;
+		this.cuit=cuit;
+		this.clientes=new HashMap<>();
+		this.vuelos=new HashMap<>();
+		this.pasajes=new HashMap<>();
+		this.pasajeros=new HashMap<>();
+		this.aeropuertos=new HashMap<>();
 		
 	}
-	public boolean cargarCliente(Cliente cliente) {
-	    // Verificar si el cliente con el mismo DNI ya está en el HashMap
-	    if (!clientes.containsKey(cliente.getDni())) {
-	        // Agregar el cliente al HashMap usando su DNI como clave
-	        clientes.put(Integer.parseInt(cliente.getDni()), cliente);
-	        return true; // Indica que se agregó el cliente
+	public void registrarCliente(int dni, String nombre, String telefono) {
+	    if (clientes.containsKey(dni)) {
+	        throw new RuntimeException("Cliente ya existe");    
 	    }
-	    return false; // Indica que el cliente ya existía y no se agregó
+	    Cliente nuevoCliente = new Cliente(dni, nombre, telefono);
+	    clientes.put(dni, nuevoCliente);
 	}
-
-
+	
+	public void registrarAeropuerto(String nombre, String pais, String provincia, String direccion) {
+		if(aeropuertos.containsKey(nombre)) {
+			throw new RuntimeException("Nombre de Aeropuerto ya existe");
+		}
+		Aeropuerto nuevoAeropuerto= new Aeropuerto(nombre, pais, provincia, direccion);
+		aeropuertos.put(nombre, nuevoAeropuerto);
+	
+	}
 }
