@@ -5,7 +5,6 @@ public class Cliente {
 	String nombreCliente;	
 	String telefono;
 	
-	
 	public Cliente(int dni, String nombre, String telefono) {
 		
 		this.nombreCliente=nombre;
