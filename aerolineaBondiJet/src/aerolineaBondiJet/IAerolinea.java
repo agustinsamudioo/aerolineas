@@ -8,10 +8,9 @@ import java.util.Map;
  */
 
 public interface IAerolinea {
-/**
-	* 1 constructor
-	* Aerolinea(String nombre, String CUIT);
-*/
+
+	void Aerolinea(String nombre, String CUIT);
+
 
 	/**
 	* - 2
@@ -22,8 +21,8 @@ public interface IAerolinea {
 	
 	/**
 	* - 3 
-	* Se ingresa un aeropuerto con los datos que lo identifican. Estos aeropuertos son los que deberán corresponder
-	* al origen y destino de los vuelos.
+	* Se ingresa un aeropuerto con los datos que lo identifican. Estos aeropuertos son los 
+	* que deberán corresponder al origen y destino de los vuelos.
 	* El nombre es único por aeropuerto en todo el mundo.
 	*/
 	void registrarAeropuerto(String nombre, String pais, String provincia, String direccion);
@@ -31,7 +30,8 @@ public interface IAerolinea {
 	/** - 4
 	* El origen y destino deben ser aeropuertos con país=”Argentina” y ya registrados en la aerolinea. 
 	* La fecha es la fecha de salida del vuelo.
-	* Los asientos se considerarán numerados correlativamente empezando con clase Turista y terminando con la clase Ejecutivo.
+	* Los asientos se considerarán numerados correlativamente empezando con clase Turista y
+	*  terminando con la clase Ejecutivo.
 	* Se cumple que precios.length == cantAsientos.length == 2
 	* -  cantAsientos[0] = cantidad total de asientos en clase Turista.
 	* -  cantAsientos[1] = cantidad total de asientos en clase Ejecutivo

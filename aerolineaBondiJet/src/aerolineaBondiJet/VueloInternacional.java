@@ -1,5 +1,5 @@
 package aerolineaBondiJet;
 
-public class VueloInternacional {
+public class VueloInternacional extends Vuelo {
 
 }

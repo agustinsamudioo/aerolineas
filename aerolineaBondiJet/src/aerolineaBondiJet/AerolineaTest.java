@@ -12,11 +12,11 @@ import org.junit.runners.MethodSorters;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class AerolineaTest {
 
-	private AerolineaBondiJet aerolinea;
+	private Aerolinea aerolinea;
 
 	@Before
 	public void setUp() {
-		aerolinea = new AerolineaBondiJet("AeroArg", "30-12345678-9");
+		aerolinea = new Aerolinea("AeroArg", "30-12345678-9");
 
 		// Registrar aeropuertos nacionales (Argentina)
 		aerolinea.registrarAeropuerto("Aeroparque", "Argentina", "Buenos Aires", "Av. Costanera Rafael Obligado");

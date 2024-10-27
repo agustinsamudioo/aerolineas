@@ -2,7 +2,7 @@ package aerolineaBondiJet;
 
 import java.util.HashMap;
 
-public class AerolineaBondiJet {
+public class Aerolinea {
 	
 	String nombre;
 	String cuit;
@@ -13,7 +13,7 @@ public class AerolineaBondiJet {
 	private HashMap<String,Aeropuerto> aeropuertos;
 	
 
-	public AerolineaBondiJet(String nombre, String cuit) {
+	public Aerolinea(String nombre, String cuit) {
 		this.nombre=nombre;
 		this.cuit=cuit;
 		this.clientes=new HashMap<>();
