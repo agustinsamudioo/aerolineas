@@ -14,13 +14,12 @@ public class Aerolinea {
 	String nombre;
 	String cuit;
 	private HashMap<Integer, Cliente> clientes;
-	private HashMap<String, Vuelo> vuelosPublicosNacionales;
-	private HashMap<String, Vuelo> vuelosPublicosInternacionales;
+	private HashMap<String, Vuelo> vuelosPublicos;
 	private HashMap<String, Vuelo> vuelosPrivados;
 	private HashMap<Integer, Pasaje> pasajes;
 	private HashMap<Integer, Pasajero> pasajeros;
 	private HashMap<String, Aeropuerto> aeropuertos;
-	private HashMap<Boolean, Integer>asientos_dispobibles;
+	private HashMap<String, String> codigosVuelos;
 
 	private static int contadorCodigo = 0;
 
@@ -98,10 +97,12 @@ public class Aerolinea {
 				cantAsientos);
 		nuevoVuelo.id_vuelo = GeneradorId();
 
-		if (vuelosPublicosNacionales.containsKey(nuevoVuelo.id_vuelo))
+		if (vuelosPublicos.containsKey(nuevoVuelo.id_vuelo))
 			throw new RuntimeException("Id de vuelo ya existe");
-		vuelosPublicosNacionales.put(nuevoVuelo.id_vuelo, nuevoVuelo);
-		String codigo = nuevoVuelo.id_vuelo + "-PUB";
+		vuelosPublicos.put(nuevoVuelo.id_vuelo, nuevoVuelo);
+		String texto= "-PUB-NAC";
+		String codigo = nuevoVuelo.id_vuelo + texto;
+		codigosVuelos.put(nuevoVuelo.id_vuelo, texto);
 		return codigo;
 	}
 
@@ -115,26 +116,26 @@ public class Aerolinea {
 				precios, cantAsientos);
 
 		nuevoVuelo.id_vuelo = GeneradorId();
-		if (vuelosPublicosNacionales.containsKey(nuevoVuelo.id_vuelo))
+		if (vuelosPublicos.containsKey(nuevoVuelo.id_vuelo))
 			throw new RuntimeException("Id de vuelo ya existe");
-		vuelosPublicosInternacionales.put(nuevoVuelo.id_vuelo, nuevoVuelo);
-		String codigo = nuevoVuelo.id_vuelo + "-PUB";
+		vuelosPublicos.put(nuevoVuelo.id_vuelo, nuevoVuelo);
+		String texto= "-PUB-INT";
+		String codigo = nuevoVuelo.id_vuelo + texto;
+		codigosVuelos.put(nuevoVuelo.id_vuelo, texto);
 		return codigo;
 	}
 	
 	
 	
-	public Map<Integer, String> asientosDisponibles(String codVueloNacional) { 
-		// cada vuelo deberia sobreescribir la funcion, uno para nacional, otro para internacional y uno para privado
-		if(!vuelosPublicosNacionales.containsKey(codVueloNacional)) throw new RuntimeException("Vuelo no existe");
-		Vuelo vuelo = vuelosPublicosNacionales.get(codVueloNacional);
-	  
-	    
+	public Map<Integer, String> asientosDisponibles(String codVuelo) { 
+		
+		if(!vuelosPublicos.containsKey(codVuelo)) throw new RuntimeException("Vuelo no existe");
+		Vuelo vuelo = vuelosPublicos.get(codVuelo);
 	    int[] cantAsientos = vuelo.cantAsientos;
 	    String[] clases = {"Turista", "Ejecutivo", "Primera Clase"};
 	    Map<Integer, String> asientosDisponibles = new HashMap<>();
 	    int numeroAsiento = 1;
-
+		
 	    // Recorrer asientos en cada clase
 	    for (int i = 0; i < cantAsientos.length; i++) {
 	        String clase = clases[i];  // Asignar el nombre de la clase directamente
