@@ -1,5 +1,6 @@
 package aerolineaBondiJet;
 
+import java.lang.reflect.UndeclaredThrowableException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -13,12 +14,13 @@ public class Aerolinea {
 	String nombre;
 	String cuit;
 	private HashMap<Integer, Cliente> clientes;
-	private HashMap<Integer, Vuelo> vuelosPublicosNacionales;
-	private HashMap<Integer, Vuelo> vuelosPublicosInternacionales;
-	private HashMap<Integer, Vuelo> vuelosPrivados;
+	private HashMap<String, Vuelo> vuelosPublicosNacionales;
+	private HashMap<String, Vuelo> vuelosPublicosInternacionales;
+	private HashMap<String, Vuelo> vuelosPrivados;
 	private HashMap<Integer, Pasaje> pasajes;
 	private HashMap<Integer, Pasajero> pasajeros;
 	private HashMap<String, Aeropuerto> aeropuertos;
+	private HashMap<Boolean, Integer>asientos_dispobibles;
 
 	private static int contadorCodigo = 0;
 
@@ -79,8 +81,9 @@ public class Aerolinea {
 		return fecha.isAfter(fechaActual);
 	}
 
-	public static synchronized int GeneradorId() {
-		return contadorCodigo++;
+	public static synchronized String GeneradorId() {
+		contadorCodigo++;
+		return String.valueOf(contadorCodigo);
 	}
 
 	public String registrarVueloPublicoNacional(String origen, String destino, String fecha, int tripulantes,
@@ -118,5 +121,32 @@ public class Aerolinea {
 		String codigo = nuevoVuelo.id_vuelo + "-PUB";
 		return codigo;
 	}
+	
+	
+	
+	public Map<Integer, String> asientosDisponibles(String codVueloNacional) { 
+		// cada vuelo deberia sobreescribir la funcion, uno para nacional, otro para internacional y uno para privado
+		if(!vuelosPublicosNacionales.containsKey(codVueloNacional)) throw new RuntimeException("Vuelo no existe");
+		Vuelo vuelo = vuelosPublicosNacionales.get(codVueloNacional);
+	  
+	    
+	    int[] cantAsientos = vuelo.cantAsientos;
+	    String[] clases = {"Turista", "Ejecutivo", "Primera Clase"};
+	    Map<Integer, String> asientosDisponibles = new HashMap<>();
+	    int numeroAsiento = 1;
 
+	    // Recorrer asientos en cada clase
+	    for (int i = 0; i < cantAsientos.length; i++) {
+	        String clase = clases[i];  // Asignar el nombre de la clase directamente
+
+	        for (int j = 0; j < cantAsientos[i]; j++) {
+	            if (vuelo.estaAsientoDisponible(numeroAsiento)) {
+	                asientosDisponibles.put(numeroAsiento, clase);
+	            }
+	            numeroAsiento++;
+	        }
+	    }
+	    return asientosDisponibles;
+	}
+	
 }

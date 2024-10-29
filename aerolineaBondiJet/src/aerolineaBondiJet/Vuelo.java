@@ -5,7 +5,7 @@ import java.util.HashMap;
 import javax.lang.model.element.NestingKind;
 
 public class Vuelo {
-	int id_vuelo;
+	String id_vuelo;
 	String nombre;
 	Aeropuerto aeropuerto_salida;
 	int capacidad;
@@ -21,6 +21,8 @@ public class Vuelo {
 	int cant_seciones;
 	int[] cantAsientos;
 	double[] precios;
+	Seccion seccion;
+	HashMap<Boolean, Integer>asientos_dispobibles;
 
 	public Vuelo(String origen, String destino, String fecha, int tripulantes, double valorRefrigerio, double[] precios,
 			int[] cantAsientos) {
@@ -31,5 +33,9 @@ public class Vuelo {
 		this.refrigerio.precio = valorRefrigerio;
 		this.precios = precios;
 		this.cantAsientos = cantAsientos;
+	}
+	
+	public boolean estaAsientoDisponible(int numeroAsiento) {
+		return true; // faltaria hacer esto
 	}
 }
