@@ -35,7 +35,5 @@ public class Vuelo {
 		this.cantAsientos = cantAsientos;
 	}
 	
-	public boolean estaAsientoDisponible(int numeroAsiento) {
-		return true; // faltaria hacer esto
-	}
+	
 }

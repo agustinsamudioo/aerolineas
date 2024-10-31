@@ -20,15 +20,16 @@ public class Aerolinea {
 	private HashMap<Integer, Pasajero> pasajeros;
 	private HashMap<String, Aeropuerto> aeropuertos;
 	private HashMap<String, String> codigosVuelos;
-
+	private HashMap<Integer, String> asientosDisponibles; // clave: numero de asiento, valor: seccion
+	private HashMap<Integer, String> asientosOcupados; // clave: numero de asiento, valor: seccion
+	// a la que pertenece el asiento
 	private static int contadorCodigo = 0;
 
 	public Aerolinea(String nombre, String cuit) {
 		this.nombre = nombre;
 		this.cuit = cuit;
 		this.clientes = new HashMap<>();
-		this.vuelosPublicosNacionales = new HashMap<>();
-		this.vuelosPublicosInternacionales = new HashMap<>();
+		this.vuelosPublicos= new HashMap<>();
 		this.vuelosPrivados = new HashMap<>();
 		this.pasajes = new HashMap<>();
 		this.pasajeros = new HashMap<>();
@@ -125,6 +126,20 @@ public class Aerolinea {
 		return codigo;
 	}
 	
+	public boolean estaAsientoDisponible(int numeroAsiento, String codVuelo) {
+		Iterator<Map.Entry<Integer, Pasajero>>iterador = pasajeros.entrySet().iterator();
+		while(iterador.hasNext()) {
+			Map.Entry<Integer, Pasajero> entrada= iterador.next();
+			int clave=entrada.getKey(); // numero de asiento
+			Pasajero valor= entrada.getValue(); // pasajero
+			if(clave!=numeroAsiento && valor.codVuelo.equalsIgnoreCase(codVuelo)) {
+				// recorre todos los asientos de los pasajeros y pregunta si el numero de asiento 
+				//que paso como argumento pertenece a algun pasajero y si esta en el mismo vuelo
+				return true;
+			}
+		}
+		return false;
+	}
 	
 	
 	public Map<Integer, String> asientosDisponibles(String codVuelo) { 
@@ -132,19 +147,23 @@ public class Aerolinea {
 		if(!vuelosPublicos.containsKey(codVuelo)) throw new RuntimeException("Vuelo no existe");
 		Vuelo vuelo = vuelosPublicos.get(codVuelo);
 	    int[] cantAsientos = vuelo.cantAsientos;
-	    String[] clases = {"Turista", "Ejecutivo", "Primera Clase"};
-	    Map<Integer, String> asientosDisponibles = new HashMap<>();
+	    String[] secciones = {"Turista", "Ejecutivo", "Primera Clase"};
 	    int numeroAsiento = 1;
 		
 	    // Recorrer asientos en cada clase
 	    for (int i = 0; i < cantAsientos.length; i++) {
-	        String clase = clases[i];  // Asignar el nombre de la clase directamente
+	        String seccion = secciones[i];  // Asignar el nombre de la clase directamente
 
 	        for (int j = 0; j < cantAsientos[i]; j++) {
-	            if (vuelo.estaAsientoDisponible(numeroAsiento)) {
-	                asientosDisponibles.put(numeroAsiento, clase);
+	            if (estaAsientoDisponible(numeroAsiento, codVuelo)) {
+	                asientosDisponibles.put(numeroAsiento, seccion);
 	            }
-	            numeroAsiento++;
+	            else {
+		            numeroAsiento++;
+		            if(!asientosOcupados.containsKey(numeroAsiento)) {
+		            	asientosOcupados.put(numeroAsiento,seccion);
+		            }
+	            }
 	        }
 	    }
 	    return asientosDisponibles;

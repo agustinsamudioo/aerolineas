@@ -1,11 +1,11 @@
 package aerolineaBondiJet;
 
 public class Pasajero {
-	int id_pasajero;
-	int id_vuelo;
+	int num_asiento;
+	String codVuelo;
 
-	public Pasajero(int id_pasajero, int id_vuelo) {
-		this.id_pasajero = id_pasajero;
-		this.id_vuelo = id_vuelo;
+	public Pasajero(int num_asiento,String codVuelo) {
+		this.num_asiento=num_asiento;
+		this.codVuelo=codVuelo;
 	}
 }
