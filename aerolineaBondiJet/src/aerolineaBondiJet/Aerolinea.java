@@ -16,7 +16,6 @@ public class Aerolinea {
 	private HashMap<Integer, Cliente> clientes;
 	private HashMap<String, Vuelo> vuelosPublicos;
 	private HashMap<String, Vuelo> vuelosPrivados;
-	private HashMap<Integer, Pasaje> pasajes;
 	private HashMap<Integer, Pasajero> pasajeros;
 	private HashMap<String, Aeropuerto> aeropuertos;
 	private HashMap<String, String> codigosVuelos;
@@ -24,6 +23,7 @@ public class Aerolinea {
 	private HashMap<Integer, String> asientosOcupados; // clave: numero de asiento, valor: seccion
 	// a la que pertenece el asiento
 	private static int contadorCodigo = 0;
+	private static int contadorCodigoPasaje = 0;
 
 	public Aerolinea(String nombre, String cuit) {
 		this.nombre = nombre;
@@ -31,7 +31,6 @@ public class Aerolinea {
 		this.clientes = new HashMap<>();
 		this.vuelosPublicos= new HashMap<>();
 		this.vuelosPrivados = new HashMap<>();
-		this.pasajes = new HashMap<>();
 		this.pasajeros = new HashMap<>();
 		this.aeropuertos = new HashMap<>();
 
@@ -84,6 +83,11 @@ public class Aerolinea {
 	public static synchronized String GeneradorId() {
 		contadorCodigo++;
 		return String.valueOf(contadorCodigo);
+	}
+	
+	public static synchronized int GeneradorIdPasaje() {
+		contadorCodigoPasaje++;
+		return contadorCodigoPasaje;
 	}
 
 	public String registrarVueloPublicoNacional(String origen, String destino, String fecha, int tripulantes,
@@ -169,4 +173,11 @@ public class Aerolinea {
 	    return asientosDisponibles;
 	}
 	
+	public int venderPasaje(int dni, String codVuelo, int nroAsiento, boolean aOcupar) {
+		if(!clientes.containsKey(dni))  throw new RuntimeException("Cliente no registrado, no se pudo vender el pasaje");
+		int codPasaje=GeneradorIdPasaje();
+		Pasajero nuevoPasajero= new Pasajero(nroAsiento, codVuelo, codPasaje,aOcupar);
+		pasajeros.put(dni, nuevoPasajero);
+		return codPasaje;
+	}
 }
