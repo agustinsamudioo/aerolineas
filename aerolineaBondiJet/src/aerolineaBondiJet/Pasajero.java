@@ -1,11 +1,12 @@
 package aerolineaBondiJet;
 
-public class Pasajero {
-	int id_pasajero;
+public class Pasajero extends Cliente {
 	int id_vuelo;
+	Pasaje pasaje;
 
-	public Pasajero(int id_pasajero, int id_vuelo) {
-		this.id_pasajero = id_pasajero;
-		this.id_vuelo = id_vuelo;
+	public Pasajero(int dni,String nombre, String telefono, int id_vuelo, Pasaje pasaje) {
+		super(dni, nombre, telefono);
+		this.id_vuelo=id_vuelo;
+		this.pasaje=pasaje;
 	}
 }

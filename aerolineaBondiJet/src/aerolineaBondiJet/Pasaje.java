@@ -2,13 +2,11 @@ package aerolineaBondiJet;
 
 public class Pasaje {
 	int id_pasaje;
-	int seccion;
-	int num_asiento;
+	Seccion seccion;
 
-	public Pasaje(int id_pasaje, int seccion, int num_asiento) {
+	public Pasaje(int id_pasaje, Seccion seccion) {
 		this.id_pasaje = id_pasaje;
 		this.seccion = seccion;
-		this.num_asiento = num_asiento;
 	}
 
 	public int getId_pasaje() {
@@ -19,19 +17,15 @@ public class Pasaje {
 		this.id_pasaje = id_pasaje;
 	}
 
-	public int getSeccion() {
+	public Seccion getSeccion() {
 		return seccion;
 	}
 
-	public void setSeccion(int seccion) {
+	public void setSeccion(Seccion seccion) {
 		this.seccion = seccion;
 	}
 
-	public int getNum_asiento() {
-		return num_asiento;
-	}
+	
 
-	public void setNum_asiento(int num_asiento) {
-		this.num_asiento = num_asiento;
-	}
+	
 }

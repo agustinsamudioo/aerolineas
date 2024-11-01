@@ -86,7 +86,7 @@ public class Aerolinea {
 	public String registrarVueloPublicoNacional(String origen, String destino, String fecha, int tripulantes,
 			double valorRefrigerio, double[] precios, int[] cantAsientos) {
 		if (!fechaPosteriorActual(fecha))
-			throw new RuntimeException("la fecha ingresada es anterior al presente");
+			throw new RuntimeException("la fecha ingresada es anterior a la fecha presente");
 		if (!aeropuertoNacional(origen))
 			throw new RuntimeException("Aeropuerto ingresado no pertenece a Argentina");
 		if (!aeropuertoNacional(destino))
@@ -98,8 +98,8 @@ public class Aerolinea {
 		if (vuelosPublicosNacionales.containsKey(nuevoVuelo.id_vuelo))
 			throw new RuntimeException("Id de vuelo ya existe");
 		vuelosPublicosNacionales.put(nuevoVuelo.id_vuelo, nuevoVuelo);
-		String codigo = nuevoVuelo.id_vuelo + "-PUB";
-		return codigo;
+		return nuevoVuelo.id_vuelo + "-PUB";
+
 	}
 
 	public String registrarVueloPublicoInternacional(String origen, String destino, String fecha, int tripulantes,
@@ -115,8 +115,32 @@ public class Aerolinea {
 		if (vuelosPublicosNacionales.containsKey(nuevoVuelo.id_vuelo))
 			throw new RuntimeException("Id de vuelo ya existe");
 		vuelosPublicosInternacionales.put(nuevoVuelo.id_vuelo, nuevoVuelo);
-		String codigo = nuevoVuelo.id_vuelo + "-PUB";
-		return codigo;
+		return nuevoVuelo.id_vuelo + "-PUB";
+
+	}
+
+
+	String VenderVueloPrivado(String origen, String destino, String fecha, int tripulantes,
+			double precio,  int dniComprador, int[] acompaniantes) {
+		
+		if (!aeropuertoNacional(origen))
+			throw new RuntimeException("Aeropuerto ingresado de origen no pertenece a Argentina");
+		
+		if (!aeropuertoNacional(destino))			
+			throw new RuntimeException("Aeropuerto ingresado de destino no pertenece a Argentina");
+		
+		if (!fechaPosteriorActual(fecha))
+			throw new RuntimeException("la fecha ingresada es anterior a la fecha actual");
+
+		VueloPrivado nuevoVuelo = new VueloPrivado(origen, destino, fecha, dniComprador, tripulantes);
+		nuevoVuelo.Valor(precio, acompaniantes);
+
+
+		nuevoVuelo.idVuelo = GeneradorId();
+		if (vuelosPublicosNacionales.containsKey(nuevoVuelo.idVuelo))
+			throw new RuntimeException("Id de vuelo ya existe");
+		vuelosPrivados.put(nuevoVuelo.idVuelo, nuevoVuelo);
+		return nuevoVuelo.idVuelo + "-PRI";
 	}
 
 }
