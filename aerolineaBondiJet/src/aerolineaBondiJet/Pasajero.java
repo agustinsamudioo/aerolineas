@@ -5,7 +5,6 @@ public class Pasajero extends Cliente {
 	String codVuelo;
 	int codPasaje;
 	boolean aOcupar;
-	//int seccion;
 
 	public Pasajero(int num_asiento,String codVuelo, int codPasaje, boolean aOcupar) {
 		super(codPasaje, codVuelo, codVuelo);
