@@ -3,8 +3,10 @@ package aerolineaBondiJet;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.plaf.basic.BasicInternalFrameTitlePane.IconifyAction;
@@ -230,5 +232,44 @@ public class Aerolinea {
 		asientosDisponibles.put(nroAsiento, seccion);
 
 	}
+	
+	/** - 11. 
+	 * devuelve una lista de códigos de vuelos. que estén entre fecha dada y hasta una semana despues. La lista estará vacía si no se encuentran vuelos similares.
+	 *  La Fecha es la fecha de salida.
+	*/
+	// origen es un aeropuerto, destino es otro aeropuerto
+	
+	public boolean fecha_actual_semana(String Fecha, String fechaVuelo) {
+		// Definimos el formato del String que vamos a recibir
+		DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		// Convertimos el String a LocalDate
+		LocalDate fechaDate = LocalDate.parse(Fecha, formato);
+		LocalDate fechavueloDate= LocalDate.parse(fechaVuelo, formato);
+		LocalDate fechaSemanaDespuesDate = fechaDate.plusWeeks(1);
+		
+		// Preguntamos si la fecha del vuelo esta entre la fecha dada y hasta una semana despues
+		if(!fechavueloDate.isBefore(fechaDate) && !fechavueloDate.isAfter(fechaSemanaDespuesDate)) {
+			return true;
+		}
+		return false;
+	}
+	
+	public List<String> consultarVuelosSimilares(String origen, String destino, String Fecha){
+		Iterator<Map.Entry<String, Vuelo>> iterador = vuelosPublicos.entrySet().iterator();
+		List<String>consultarVuelosSimilares= new ArrayList<String>();
+		while (iterador.hasNext()) {
+			Map.Entry<String, Vuelo> entrada = iterador.next();
+			Vuelo valor = entrada.getValue(); // Objeto vuelo
+			String clave = entrada.getKey(); // codigo de vuelo
+			if(valor.origen.nombre.equals(origen) && valor.destino.nombre.equalsIgnoreCase(destino)) {
+				if(fecha_actual_semana(Fecha, valor.fecha_salida_vuelo)) {
+					consultarVuelosSimilares.add(clave);
+				}
+			}
+		
+	}
+		return consultarVuelosSimilares;
+	}
+
 
 }
