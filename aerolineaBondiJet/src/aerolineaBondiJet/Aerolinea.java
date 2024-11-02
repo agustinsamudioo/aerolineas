@@ -232,107 +232,111 @@ public class Aerolinea {
 			Map.Entry<Integer, Pasajero> entrada = iterador.next();
 			Pasajero valor = entrada.getValue(); // Pasajero
 			int clave = entrada.getKey(); // dni
-			if(clave==dni && valor.codVuelo.equalsIgnoreCase(codVuelo)) {
+			if (clave == dni && valor.codVuelo.equalsIgnoreCase(codVuelo)) {
 				pasajeros.remove(clave);
 				asientosDisponibles.put(nroAsiento, seccion);
 			}
 		}
 		throw new RuntimeException("No se pudo cancelar el pasaje");
 	}
-	
-	/** - 11. 
-	 * devuelve una lista de códigos de vuelos. que estén entre fecha dada y hasta una semana despues. La lista estará vacía si no se encuentran vuelos similares.
-	 *  La Fecha es la fecha de salida.
-	*/
+
+	/**
+	 * - 11. devuelve una lista de códigos de vuelos. que estén entre fecha dada y
+	 * hasta una semana despues. La lista estará vacía si no se encuentran vuelos
+	 * similares. La Fecha es la fecha de salida.
+	 */
 	// origen es un aeropuerto, destino es otro aeropuerto
-	
+
 	public boolean fecha_actual_semana(String Fecha, String fechaVuelo) {
 		// Definimos el formato del String que vamos a recibir
 		DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 		// Convertimos el String a LocalDate
 		LocalDate fechaDate = LocalDate.parse(Fecha, formato);
-		LocalDate fechavueloDate= LocalDate.parse(fechaVuelo, formato);
+		LocalDate fechavueloDate = LocalDate.parse(fechaVuelo, formato);
 		LocalDate fechaSemanaDespuesDate = fechaDate.plusWeeks(1);
-		
-		// Preguntamos si la fecha del vuelo esta entre la fecha dada y hasta una semana despues
-		if(!fechavueloDate.isBefore(fechaDate) && !fechavueloDate.isAfter(fechaSemanaDespuesDate)) {
+
+		// Preguntamos si la fecha del vuelo esta entre la fecha dada y hasta una semana
+		// despues
+		if (!fechavueloDate.isBefore(fechaDate) && !fechavueloDate.isAfter(fechaSemanaDespuesDate)) {
 			return true;
 		}
 		return false;
 	}
-	
-	public List<String> consultarVuelosSimilares(String origen, String destino, String Fecha){
+
+	public List<String> consultarVuelosSimilares(String origen, String destino, String Fecha) {
 		Iterator<Map.Entry<String, Vuelo>> iterador = vuelos.entrySet().iterator();
-		List<String>consultarVuelosSimilares= new ArrayList<String>();
+		List<String> consultarVuelosSimilares = new ArrayList<String>();
 		while (iterador.hasNext()) {
 			Map.Entry<String, Vuelo> entrada = iterador.next();
 			Vuelo valor = entrada.getValue(); // Objeto vuelo
 			String clave = entrada.getKey(); // codigo de vuelo
-			if(valor.origen.nombre.equals(origen) && valor.destino.nombre.equalsIgnoreCase(destino)) {
-				if(fecha_actual_semana(Fecha, valor.fecha_salida_vuelo)) {
+			if (valor.origen.nombre.equals(origen) && valor.destino.nombre.equalsIgnoreCase(destino)) {
+				if (fecha_actual_semana(Fecha, valor.fecha_salida_vuelo)) {
 					consultarVuelosSimilares.add(clave);
 				}
 			}
-		
-	}
+
+		}
 		return consultarVuelosSimilares;
 	}
 
-	/** - 15 
-	* Detalle de un vuelo
-	* devuelve un texto con el detalle un vuelo en particular.
-	* Formato del String: CodigoVuelo - Nombre Aeropuerto de salida - Nombre Aeropuerto de llegada - 
-	*                     fecha de salida - [NACIONAL /INTERNACIONAL / PRIVADO + cantidad de jets necesarios].
-	* --> Ejemplo:
-	*   . 545-PUB - Bariloche - Jujuy - 10/11/2024 - NACIONAL
-	*   . 103-PUB - Ezeiza  - Madrid -  15/11/2024 - INTERNACIONAL
-	*   . 222-PRI - Ezeiza - Tierra del Fuego - 3/12/2024 - PRIVADO (3)
-	*/
+	/**
+	 * - 15 Detalle de un vuelo devuelve un texto con el detalle un vuelo en
+	 * particular. Formato del String: CodigoVuelo - Nombre Aeropuerto de salida -
+	 * Nombre Aeropuerto de llegada - fecha de salida - [NACIONAL /INTERNACIONAL /
+	 * PRIVADO + cantidad de jets necesarios]. --> Ejemplo: . 545-PUB - Bariloche -
+	 * Jujuy - 10/11/2024 - NACIONAL . 103-PUB - Ezeiza - Madrid - 15/11/2024 -
+	 * INTERNACIONAL . 222-PRI - Ezeiza - Tierra del Fuego - 3/12/2024 - PRIVADO (3)
+	 */
 	public String detalleDeVuelo(String codVuelo) {
-		Iterator<Map.Entry<String, Vuelo>>iterador=  vuelos.entrySet().iterator();
-		while(iterador.hasNext()) {
-			Map.Entry<String, Vuelo> entrada=iterador.next();
-			Vuelo valor=entrada.getValue(); // objeto vuelo
-			String clave=entrada.getKey(); // codigo de vuelo
-			if(clave.equalsIgnoreCase(codVuelo)) {
-				String detalleVuelo= clave + "-" + valor.origen.nombre + "-" + valor.destino.nombre + "-" + valor.fecha_salida_vuelo + "-";
-				if(aeropuertoNacional(valor.origen.nombre) && aeropuertoNacional(valor.destino.nombre)) {
-					detalleVuelo+= "NACIONAL";
-					return detalleVuelo;
-				}
-				else {
-					detalleVuelo+= "INTERNACIONAL";
-					return detalleVuelo;
-				}
+		Iterator<Map.Entry<String, Vuelo>> iterador = vuelos.entrySet().iterator();
+		Vuelo vuelo = vuelos.get(codVuelo);
+		String tipo="";
+		if (vuelo instanceof VueloInternacional)
+			tipo = "NACIONAL";
+		if (vuelo instanceof VueloNacional)
+			tipo = "INTERNACIONAL";
+		if (vuelo instanceof VueloPrivado)
+			tipo = "PRIVADO"+"("+((VueloPrivado) vuelo).cant_jets+")";
+
+		while (iterador.hasNext()) {
+			Map.Entry<String, Vuelo> entrada = iterador.next();
+			Vuelo valor = entrada.getValue(); // objeto vuelo
+			String clave = entrada.getKey(); // codigo de vuelo
+			if (clave.equalsIgnoreCase(codVuelo)) {
+				String detalleVuelo = clave + "-" + valor.origen.nombre + "-" + valor.destino.nombre + "-"
+						+ valor.fecha_salida_vuelo + "-" + tipo;
+				return detalleVuelo;
+
 			}
 		}
 		return "Codigo de vuelo no existe";
 	}
-	/** - 13
-	* Cancela un vuelo completo conociendo su codigo.
-	* Los pasajes se reprograman a vuelos con igual destino, no importa el numero del asiento pero 
-	* si a igual seccion o a una mejor, y no importan las escalas.
-	* Devuelve los codigos de los pasajes que no se pudieron reprogramar.
-	* Los pasajes no reprogramados se eliminan. Y se devuelven los datos de la cancelación, indicando 
-	* los pasajeros que se reprogramaron y a qué vuelo,  y los que se cancelaron por no tener lugar.
-	* Devuelve una lista de Strings con este formato : “dni - nombre - telefono - [Codigo nuevo vuelo|CANCELADO]”
-	* --> Ejemplo: 
-	*   . 11111111 - Juan - 33333333 - CANCELADO
-	*   . 11234126 - Jonathan - 33333311 - 545-PUB
-	*/
-	List<String> cancelarVuelo(String codVuelo){
-		List<String>vuelosCancelados= new ArrayList<String>();
-		String formato;
-		Iterator<Map.Entry<Integer, Pasajero>>iterador=  pasajeros.entrySet().iterator();
-		while(iterador.hasNext()) {
-			Map.Entry<Integer, Pasajero> entrada=iterador.next();
-			Pasajero valor=entrada.getValue(); // objeto pasajero
-			int clave=entrada.getKey(); // dni
-			formato+= clave +" - "+ valor.nombreCliente +" - " + valor.telefono +" - ";
+
+	/**
+	 * - 13 Cancela un vuelo completo conociendo su codigo. Los pasajes se
+	 * reprograman a vuelos con igual destino, no importa el numero del asiento pero
+	 * si a igual seccion o a una mejor, y no importan las escalas. Devuelve los
+	 * codigos de los pasajes que no se pudieron reprogramar. Los pasajes no
+	 * reprogramados se eliminan. Y se devuelven los datos de la cancelación,
+	 * indicando los pasajeros que se reprogramaron y a qué vuelo, y los que se
+	 * cancelaron por no tener lugar. Devuelve una lista de Strings con este formato
+	 * : “dni - nombre - telefono - [Codigo nuevo vuelo|CANCELADO]” --> Ejemplo: .
+	 * 11111111 - Juan - 33333333 - CANCELADO . 11234126 - Jonathan - 33333311 -
+	 * 545-PUB
+	 */
+	List<String> cancelarVuelo(String codVuelo) {
+		List<String> vuelosCancelados = new ArrayList<String>();
+		String formato = "";
+		Iterator<Map.Entry<Integer, Pasajero>> iterador = pasajeros.entrySet().iterator();
+
+		while (iterador.hasNext()) {
+			Map.Entry<Integer, Pasajero> entrada = iterador.next();
+			Pasajero valor = entrada.getValue(); // objeto pasajero
+			int clave = entrada.getKey(); // dni
+			formato += clave + " - " + valor.nombreCliente + " - " + valor.telefono + " - ";
+			vuelosCancelados.add(formato);
+		}
 		return vuelosCancelados;
 	}
-		
-
-
-
 }
