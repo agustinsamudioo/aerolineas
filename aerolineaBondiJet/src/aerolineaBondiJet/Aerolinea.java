@@ -16,11 +16,10 @@ public class Aerolinea {
 	String nombre;
 	String cuit;
 	private HashMap<Integer, Cliente> clientes;
-	private HashMap<String, Vuelo> vuelosPublicos;
-	private HashMap<String, Vuelo> vuelosPrivados;
+	private HashMap<String, Vuelo> vuelos; // id vuelo, objeto vuelo
 	private HashMap<Integer, Pasajero> pasajeros;
 	private HashMap<String, Aeropuerto> aeropuertos;
-	private HashMap<String, String> codigosVuelos;
+	private HashMap<String, String> codigosVuelos; // id vuelo , texto PUB o PRIV
 	private HashMap<Integer, String> asientos;
 	private HashMap<Integer, String> asientosDisponibles; // clave: numero de asiento, valor: seccion
 	// private HashMap<Integer, String> asientosOcupados; // clave: numero de
@@ -32,8 +31,7 @@ public class Aerolinea {
 		this.nombre = nombre;
 		this.cuit = cuit;
 		this.clientes = new HashMap<>();
-		this.vuelosPublicos = new HashMap<>();
-		this.vuelosPrivados = new HashMap<>();
+		this.vuelos = new HashMap<>();
 		this.pasajeros = new HashMap<>();
 		this.aeropuertos = new HashMap<>();
 
@@ -105,9 +103,9 @@ public class Aerolinea {
 				cantAsientos);
 		nuevoVuelo.id_vuelo = GeneradorId();
 
-		if (vuelosPublicos.containsKey(nuevoVuelo.id_vuelo))
+		if (vuelos.containsKey(nuevoVuelo.id_vuelo))
 			throw new RuntimeException("Id de vuelo ya existe");
-		vuelosPublicos.put(nuevoVuelo.id_vuelo, nuevoVuelo);
+		vuelos.put(nuevoVuelo.id_vuelo, nuevoVuelo);
 		String texto = "-PUB-NAC";
 		String codigo = nuevoVuelo.id_vuelo + texto;
 		codigosVuelos.put(nuevoVuelo.id_vuelo, texto);
@@ -124,9 +122,9 @@ public class Aerolinea {
 				precios, cantAsientos);
 
 		nuevoVuelo.id_vuelo = GeneradorId();
-		if (vuelosPublicos.containsKey(nuevoVuelo.id_vuelo))
+		if (vuelos.containsKey(nuevoVuelo.id_vuelo))
 			throw new RuntimeException("Id de vuelo ya existe");
-		vuelosPublicos.put(nuevoVuelo.id_vuelo, nuevoVuelo);
+		vuelos.put(nuevoVuelo.id_vuelo, nuevoVuelo);
 		String texto = "-PUB-INT";
 		String codigo = nuevoVuelo.id_vuelo + texto;
 		codigosVuelos.put(nuevoVuelo.id_vuelo, texto);
@@ -174,9 +172,9 @@ public class Aerolinea {
 	}
 
 	public Map<Integer, String> generarAsientos(String codVuelo) {
-		if (!vuelosPublicos.containsKey(codVuelo))
+		if (!vuelos.containsKey(codVuelo))
 			throw new RuntimeException("Vuelo no existe");
-		Vuelo vuelo = vuelosPublicos.get(codVuelo);
+		Vuelo vuelo = vuelos.get(codVuelo);
 		int[] cantAsientos = vuelo.cantAsientos;
 		String[] secciones = { "Turista", "Ejecutivo", "Primera Clase" };
 		int numeroAsiento = 1;
@@ -255,7 +253,7 @@ public class Aerolinea {
 	}
 	
 	public List<String> consultarVuelosSimilares(String origen, String destino, String Fecha){
-		Iterator<Map.Entry<String, Vuelo>> iterador = vuelosPublicos.entrySet().iterator();
+		Iterator<Map.Entry<String, Vuelo>> iterador = vuelos.entrySet().iterator();
 		List<String>consultarVuelosSimilares= new ArrayList<String>();
 		while (iterador.hasNext()) {
 			Map.Entry<String, Vuelo> entrada = iterador.next();
@@ -269,6 +267,37 @@ public class Aerolinea {
 		
 	}
 		return consultarVuelosSimilares;
+	}
+
+	/** - 15 
+	* Detalle de un vuelo
+	* devuelve un texto con el detalle un vuelo en particular.
+	* Formato del String: CodigoVuelo - Nombre Aeropuerto de salida - Nombre Aeropuerto de llegada - 
+	*                     fecha de salida - [NACIONAL /INTERNACIONAL / PRIVADO + cantidad de jets necesarios].
+	* --> Ejemplo:
+	*   . 545-PUB - Bariloche - Jujuy - 10/11/2024 - NACIONAL
+	*   . 103-PUB - Ezeiza  - Madrid -  15/11/2024 - INTERNACIONAL
+	*   . 222-PRI - Ezeiza - Tierra del Fuego - 3/12/2024 - PRIVADO (3)
+	*/
+	public String detalleDeVuelo(String codVuelo) {
+		Iterator<Map.Entry<String, Vuelo>>iterador=  vuelos.entrySet().iterator();
+		while(iterador.hasNext()) {
+			Map.Entry<String, Vuelo> entrada=iterador.next();
+			Vuelo valor=entrada.getValue(); // objeto vuelo
+			String clave=entrada.getKey(); // codigo de vuelo
+			if(clave.equalsIgnoreCase(codVuelo)) {
+				String detalleVuelo= clave + "-" + valor.origen.nombre + "-" + valor.destino.nombre + "-" + valor.fecha_salida_vuelo + "-";
+				if(aeropuertoNacional(valor.origen.nombre) && aeropuertoNacional(valor.destino.nombre)) {
+					detalleVuelo+= "NACIONAL";
+					return detalleVuelo;
+				}
+				else {
+					detalleVuelo+= "INTERNACIONAL";
+					return detalleVuelo;
+				}
+			}
+		}
+		return "Codigo de vuelo no existe";
 	}
 
 
