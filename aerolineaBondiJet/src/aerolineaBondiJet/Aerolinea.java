@@ -1,6 +1,7 @@
 package aerolineaBondiJet;
 
 import java.lang.reflect.UndeclaredThrowableException;
+import java.nio.channels.NonReadableChannelException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -226,9 +227,17 @@ public class Aerolinea {
 
 	void cancelarPasaje(int dni, String codVuelo, int nroAsiento) {
 		String seccion = consultarSeccionAsiento(nroAsiento);
-		pasajeros.remove(dni, codVuelo);
-		asientosDisponibles.put(nroAsiento, seccion);
-
+		Iterator<Map.Entry<Integer, Pasajero>> iterador = pasajeros.entrySet().iterator();
+		while (iterador.hasNext()) {
+			Map.Entry<Integer, Pasajero> entrada = iterador.next();
+			Pasajero valor = entrada.getValue(); // Pasajero
+			int clave = entrada.getKey(); // dni
+			if(clave==dni && valor.codVuelo.equalsIgnoreCase(codVuelo)) {
+				pasajeros.remove(clave);
+				asientosDisponibles.put(nroAsiento, seccion);
+			}
+		}
+		throw new RuntimeException("No se pudo cancelar el pasaje");
 	}
 	
 	/** - 11. 
@@ -299,6 +308,31 @@ public class Aerolinea {
 		}
 		return "Codigo de vuelo no existe";
 	}
+	/** - 13
+	* Cancela un vuelo completo conociendo su codigo.
+	* Los pasajes se reprograman a vuelos con igual destino, no importa el numero del asiento pero 
+	* si a igual seccion o a una mejor, y no importan las escalas.
+	* Devuelve los codigos de los pasajes que no se pudieron reprogramar.
+	* Los pasajes no reprogramados se eliminan. Y se devuelven los datos de la cancelación, indicando 
+	* los pasajeros que se reprogramaron y a qué vuelo,  y los que se cancelaron por no tener lugar.
+	* Devuelve una lista de Strings con este formato : “dni - nombre - telefono - [Codigo nuevo vuelo|CANCELADO]”
+	* --> Ejemplo: 
+	*   . 11111111 - Juan - 33333333 - CANCELADO
+	*   . 11234126 - Jonathan - 33333311 - 545-PUB
+	*/
+	List<String> cancelarVuelo(String codVuelo){
+		List<String>vuelosCancelados= new ArrayList<String>();
+		String formato;
+		Iterator<Map.Entry<Integer, Pasajero>>iterador=  pasajeros.entrySet().iterator();
+		while(iterador.hasNext()) {
+			Map.Entry<Integer, Pasajero> entrada=iterador.next();
+			Pasajero valor=entrada.getValue(); // objeto pasajero
+			int clave=entrada.getKey(); // dni
+			formato+= clave +" - "+ valor.nombreCliente +" - " + valor.telefono +" - ";
+		return vuelosCancelados;
+	}
+		
+
 
 
 }
