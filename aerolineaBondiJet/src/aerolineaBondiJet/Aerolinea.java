@@ -1,10 +1,13 @@
 package aerolineaBondiJet;
 
 import java.lang.reflect.UndeclaredThrowableException;
+import java.nio.channels.NonReadableChannelException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.plaf.basic.BasicInternalFrameTitlePane.IconifyAction;
@@ -16,9 +19,10 @@ public class Aerolinea {
 	private HashMap<Integer, Cliente> clientes;
 	private HashMap<String, Vuelo> vuelosPublicos;
 	private HashMap<Integer, Vuelo> vuelosPrivados;
+	private HashMap<String, Vuelo> vuelos; // id vuelo, objeto vuelo
 	private HashMap<Integer, Pasajero> pasajeros;
 	private HashMap<String, Aeropuerto> aeropuertos;
-	private HashMap<String, String> codigosVuelos;
+	private HashMap<String, String> codigosVuelos; // id vuelo , texto PUB o PRIV
 	private HashMap<Integer, String> asientos;
 	private HashMap<Integer, String> asientosDisponibles; // clave: numero de asiento, valor: seccion
 	// private HashMap<Integer, String> asientosOcupados; // clave: numero de
@@ -30,8 +34,7 @@ public class Aerolinea {
 		this.nombre = nombre;
 		this.cuit = cuit;
 		this.clientes = new HashMap<>();
-		this.vuelosPublicos = new HashMap<>();
-		this.vuelosPrivados = new HashMap<>();
+		this.vuelos = new HashMap<>();
 		this.pasajeros = new HashMap<>();
 		this.aeropuertos = new HashMap<>();
 
@@ -103,19 +106,19 @@ public class Aerolinea {
 				cantAsientos);
 		nuevoVuelo.id_vuelo = GeneradorId();
 
-		if (vuelosPublicos.containsKey(nuevoVuelo.id_vuelo))
+		if (vuelos.containsKey(nuevoVuelo.id_vuelo))
 			throw new RuntimeException("Id de vuelo ya existe");
-<<<<<<< HEAD
 		vuelosPublicosNacionales.put(nuevoVuelo.id_vuelo, nuevoVuelo);
 		return nuevoVuelo.id_vuelo + "-PUB";
 
-=======
 		vuelosPublicos.put(nuevoVuelo.id_vuelo, nuevoVuelo);
+
+		vuelos.put(nuevoVuelo.id_vuelo, nuevoVuelo);
 		String texto = "-PUB-NAC";
 		String codigo = nuevoVuelo.id_vuelo + texto;
 		codigosVuelos.put(nuevoVuelo.id_vuelo, texto);
 		return codigo;
->>>>>>> branch 'main' of https://github.com/agustinsamudioo/aerolineas.git
+
 	}
 
 	public String registrarVueloPublicoInternacional(String origen, String destino, String fecha, int tripulantes,
@@ -128,9 +131,9 @@ public class Aerolinea {
 				precios, cantAsientos);
 
 		nuevoVuelo.id_vuelo = GeneradorId();
-		if (vuelosPublicos.containsKey(nuevoVuelo.id_vuelo))
+		if (vuelos.containsKey(nuevoVuelo.id_vuelo))
 			throw new RuntimeException("Id de vuelo ya existe");
-<<<<<<< HEAD
+
 		vuelosPublicosInternacionales.put(nuevoVuelo.id_vuelo, nuevoVuelo);
 		return nuevoVuelo.id_vuelo + "-PUB";
 
@@ -149,17 +152,15 @@ public class Aerolinea {
 		if (!fechaPosteriorActual(fecha))
 			throw new RuntimeException("la fecha ingresada es anterior a la fecha actual");
 
-		VueloPrivado VueloNuevo = new VueloPrivado(origen, destino, fecha, dniComprador, tripulantes);
-		 VueloNuevo.valor(precio, tripulantes);
-
-
-		VueloNuevo.idVuelo = GeneradorId();
-		if (vuelosPrivados.containsKey(VueloNuevo.idVuelo))
-			throw new RuntimeException("Id de vuelo ya existe");
-		vuelosPrivados.put(VueloNuevo.idVuelo, VueloNuevo);
-		return VueloNuevo.idVuelo + "-PRI";
+		VueloPrivado VueloNuevo = new VueloPrivado(origen, destino, fecha, dniComprador, tripulantes, precio);
+		 
 		
-
+		 VueloNuevo.idVuelo = GeneradorId();
+			if (vuelosPrivados.containsKey(VueloNuevo.idVuelo))
+				throw new RuntimeException("Id de vuelo ya existe");
+			vuelosPrivados.put(VueloNuevo.idVuelo, VueloNuevo);
+			return VueloNuevo.idVuelo + "-PRI";
+		
 	}
 
 //	public Map<Integer, String> asientosDisponiblesOriginal(String codVuelo) { 
@@ -203,9 +204,9 @@ public class Aerolinea {
 	}
 
 	public Map<Integer, String> generarAsientos(String codVuelo) {
-		if (!vuelosPublicos.containsKey(codVuelo))
+		if (!vuelos.containsKey(codVuelo))
 			throw new RuntimeException("Vuelo no existe");
-		Vuelo vuelo = vuelosPublicos.get(codVuelo);
+		Vuelo vuelo = vuelos.get(codVuelo);
 		int[] cantAsientos = vuelo.cantAsientos;
 		String[] secciones = { "Turista", "Ejecutivo", "Primera Clase" };
 		int numeroAsiento = 1;
@@ -257,9 +258,116 @@ public class Aerolinea {
 
 	void cancelarPasaje(int dni, String codVuelo, int nroAsiento) {
 		String seccion = consultarSeccionAsiento(nroAsiento);
-		pasajeros.remove(dni, codVuelo);
-		asientosDisponibles.put(nroAsiento, seccion);
-
+		Iterator<Map.Entry<Integer, Pasajero>> iterador = pasajeros.entrySet().iterator();
+		while (iterador.hasNext()) {
+			Map.Entry<Integer, Pasajero> entrada = iterador.next();
+			Pasajero valor = entrada.getValue(); // Pasajero
+			int clave = entrada.getKey(); // dni
+			if (clave == dni && valor.codVuelo.equalsIgnoreCase(codVuelo)) {
+				pasajeros.remove(clave);
+				asientosDisponibles.put(nroAsiento, seccion);
+			}
+		}
+		throw new RuntimeException("No se pudo cancelar el pasaje");
 	}
 
+	/**
+	 * - 11. devuelve una lista de códigos de vuelos. que estén entre fecha dada y
+	 * hasta una semana despues. La lista estará vacía si no se encuentran vuelos
+	 * similares. La Fecha es la fecha de salida.
+	 */
+	// origen es un aeropuerto, destino es otro aeropuerto
+
+	public boolean fecha_actual_semana(String Fecha, String fechaVuelo) {
+		// Definimos el formato del String que vamos a recibir
+		DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		// Convertimos el String a LocalDate
+		LocalDate fechaDate = LocalDate.parse(Fecha, formato);
+		LocalDate fechavueloDate = LocalDate.parse(fechaVuelo, formato);
+		LocalDate fechaSemanaDespuesDate = fechaDate.plusWeeks(1);
+
+		// Preguntamos si la fecha del vuelo esta entre la fecha dada y hasta una semana
+		// despues
+		if (!fechavueloDate.isBefore(fechaDate) && !fechavueloDate.isAfter(fechaSemanaDespuesDate)) {
+			return true;
+		}
+		return false;
+	}
+
+	public List<String> consultarVuelosSimilares(String origen, String destino, String Fecha) {
+		Iterator<Map.Entry<String, Vuelo>> iterador = vuelos.entrySet().iterator();
+		List<String> consultarVuelosSimilares = new ArrayList<String>();
+		while (iterador.hasNext()) {
+			Map.Entry<String, Vuelo> entrada = iterador.next();
+			Vuelo valor = entrada.getValue(); // Objeto vuelo
+			String clave = entrada.getKey(); // codigo de vuelo
+			if (valor.origen.nombre.equals(origen) && valor.destino.nombre.equalsIgnoreCase(destino)) {
+				if (fecha_actual_semana(Fecha, valor.fecha_salida_vuelo)) {
+					consultarVuelosSimilares.add(clave);
+				}
+			}
+
+		}
+		return consultarVuelosSimilares;
+	}
+
+	/**
+	 * - 15 Detalle de un vuelo devuelve un texto con el detalle un vuelo en
+	 * particular. Formato del String: CodigoVuelo - Nombre Aeropuerto de salida -
+	 * Nombre Aeropuerto de llegada - fecha de salida - [NACIONAL /INTERNACIONAL /
+	 * PRIVADO + cantidad de jets necesarios]. --> Ejemplo: . 545-PUB - Bariloche -
+	 * Jujuy - 10/11/2024 - NACIONAL . 103-PUB - Ezeiza - Madrid - 15/11/2024 -
+	 * INTERNACIONAL . 222-PRI - Ezeiza - Tierra del Fuego - 3/12/2024 - PRIVADO (3)
+	 */
+	public String detalleDeVuelo(String codVuelo) {
+		Iterator<Map.Entry<String, Vuelo>> iterador = vuelos.entrySet().iterator();
+		Vuelo vuelo = vuelos.get(codVuelo);
+		String tipo="";
+		if (vuelo instanceof VueloInternacional)
+			tipo = "NACIONAL";
+		if (vuelo instanceof VueloNacional)
+			tipo = "INTERNACIONAL";
+		if (vuelo instanceof VueloPrivado)
+			tipo = "PRIVADO"+"("+((VueloPrivado) vuelo).cant_jets+")";
+
+		while (iterador.hasNext()) {
+			Map.Entry<String, Vuelo> entrada = iterador.next();
+			Vuelo valor = entrada.getValue(); // objeto vuelo
+			String clave = entrada.getKey(); // codigo de vuelo
+			if (clave.equalsIgnoreCase(codVuelo)) {
+				String detalleVuelo = clave + "-" + valor.origen.nombre + "-" + valor.destino.nombre + "-"
+						+ valor.fecha_salida_vuelo + "-" + tipo;
+				return detalleVuelo;
+
+			}
+		}
+		return "Codigo de vuelo no existe";
+	}
+
+	/**
+	 * - 13 Cancela un vuelo completo conociendo su codigo. Los pasajes se
+	 * reprograman a vuelos con igual destino, no importa el numero del asiento pero
+	 * si a igual seccion o a una mejor, y no importan las escalas. Devuelve los
+	 * codigos de los pasajes que no se pudieron reprogramar. Los pasajes no
+	 * reprogramados se eliminan. Y se devuelven los datos de la cancelación,
+	 * indicando los pasajeros que se reprogramaron y a qué vuelo, y los que se
+	 * cancelaron por no tener lugar. Devuelve una lista de Strings con este formato
+	 * : “dni - nombre - telefono - [Codigo nuevo vuelo|CANCELADO]” --> Ejemplo: .
+	 * 11111111 - Juan - 33333333 - CANCELADO . 11234126 - Jonathan - 33333311 -
+	 * 545-PUB
+	 */
+	List<String> cancelarVuelo(String codVuelo) {
+		List<String> vuelosCancelados = new ArrayList<String>();
+		String formato = "";
+		Iterator<Map.Entry<Integer, Pasajero>> iterador = pasajeros.entrySet().iterator();
+
+		while (iterador.hasNext()) {
+			Map.Entry<Integer, Pasajero> entrada = iterador.next();
+			Pasajero valor = entrada.getValue(); // objeto pasajero
+			int clave = entrada.getKey(); // dni
+			formato += clave + " - " + valor.nombreCliente + " - " + valor.telefono + " - ";
+			vuelosCancelados.add(formato);
+		}
+		return vuelosCancelados;
+	}
 }
