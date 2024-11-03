@@ -9,7 +9,8 @@ public class VueloPrivado extends Vuelo{
 	String fecha;
 	Cliente clienteComprador; //de aca se necesita el dni del comprador solamente.
 	int tripulantes;
-	
+	int dni_comprador;
+	double valorFinal;
 	
 	
 
@@ -18,21 +19,34 @@ public class VueloPrivado extends Vuelo{
 		this.destino=destino;
 		this.fecha=fecha;
 		this.tripulantes=tripulantes;
+		this.dni_comprador= dni_comprador;
 	}
-	public double Valor(double precio,int[] acompaniantes) {
+//	public double valor(double precio,int tripulantes) {
 		
-		double valor = precio * cantidadDeJetsNecesarios(acompaniantes);
+//		double valor = precio * JetsNecesarios(tripulantes);
+//		double impuesto = valor*0.3;
+//		double valorFinal= valor + impuesto;
+//		return valorFinal;
+		
+		
+//	}
+	public String toString() {
+		return "Id del vuelo:"+ id_vuelo ;
+	}
+	public double JetsNecesarios(int tripulantes) {
+		int capacidadJet=15;
+		
+		double cantidadDeJets =  tripulantes / capacidadJet ;
+		return cantidadDeJets = Math.ceil(cantidadDeJets);
+		
+	}
+	public void valor(double precio, int tripulantes2) {
+		double valor = precio * JetsNecesarios(tripulantes);
 		double impuesto = valor*0.3;
 		double valorFinal= valor + impuesto;
-		return valorFinal;
-		
 		
 	}
-	public String toString() {
-		return id_vuelo
-	}
-	public int cantidadDeJetsNecesarios(int[] acompaniantes) {
-		
-		
-	}
+	
+	
+	
 }

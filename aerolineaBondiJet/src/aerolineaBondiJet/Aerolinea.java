@@ -1,5 +1,6 @@
 package aerolineaBondiJet;
 
+import java.lang.reflect.UndeclaredThrowableException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -13,23 +14,24 @@ public class Aerolinea {
 	String nombre;
 	String cuit;
 	private HashMap<Integer, Cliente> clientes;
-	private HashMap<Integer, Vuelo> vuelosPublicosNacionales;
-	private HashMap<Integer, Vuelo> vuelosPublicosInternacionales;
+	private HashMap<String, Vuelo> vuelosPublicos;
 	private HashMap<Integer, Vuelo> vuelosPrivados;
-	private HashMap<Integer, Pasaje> pasajes;
 	private HashMap<Integer, Pasajero> pasajeros;
 	private HashMap<String, Aeropuerto> aeropuertos;
-
-	private static int contadorCodigo = 0;
+	private HashMap<String, String> codigosVuelos;
+	private HashMap<Integer, String> asientos;
+	private HashMap<Integer, String> asientosDisponibles; // clave: numero de asiento, valor: seccion
+	// private HashMap<Integer, String> asientosOcupados; // clave: numero de
+	// asiento, valor: seccion
+	private static int CodigoId = 0;
+	private static int contadorCodigoPasaje = 0;
 
 	public Aerolinea(String nombre, String cuit) {
 		this.nombre = nombre;
 		this.cuit = cuit;
 		this.clientes = new HashMap<>();
-		this.vuelosPublicosNacionales = new HashMap<>();
-		this.vuelosPublicosInternacionales = new HashMap<>();
+		this.vuelosPublicos = new HashMap<>();
 		this.vuelosPrivados = new HashMap<>();
-		this.pasajes = new HashMap<>();
 		this.pasajeros = new HashMap<>();
 		this.aeropuertos = new HashMap<>();
 
@@ -80,7 +82,13 @@ public class Aerolinea {
 	}
 
 	public static synchronized int GeneradorId() {
-		return contadorCodigo++;
+		CodigoId++;
+		return CodigoId++;
+	}
+
+	public static synchronized int GeneradorIdPasaje() {
+		contadorCodigoPasaje++;
+		return contadorCodigoPasaje;
 	}
 
 	public String registrarVueloPublicoNacional(String origen, String destino, String fecha, int tripulantes,
@@ -95,11 +103,19 @@ public class Aerolinea {
 				cantAsientos);
 		nuevoVuelo.id_vuelo = GeneradorId();
 
-		if (vuelosPublicosNacionales.containsKey(nuevoVuelo.id_vuelo))
+		if (vuelosPublicos.containsKey(nuevoVuelo.id_vuelo))
 			throw new RuntimeException("Id de vuelo ya existe");
+<<<<<<< HEAD
 		vuelosPublicosNacionales.put(nuevoVuelo.id_vuelo, nuevoVuelo);
 		return nuevoVuelo.id_vuelo + "-PUB";
 
+=======
+		vuelosPublicos.put(nuevoVuelo.id_vuelo, nuevoVuelo);
+		String texto = "-PUB-NAC";
+		String codigo = nuevoVuelo.id_vuelo + texto;
+		codigosVuelos.put(nuevoVuelo.id_vuelo, texto);
+		return codigo;
+>>>>>>> branch 'main' of https://github.com/agustinsamudioo/aerolineas.git
 	}
 
 	public String registrarVueloPublicoInternacional(String origen, String destino, String fecha, int tripulantes,
@@ -112,8 +128,9 @@ public class Aerolinea {
 				precios, cantAsientos);
 
 		nuevoVuelo.id_vuelo = GeneradorId();
-		if (vuelosPublicosNacionales.containsKey(nuevoVuelo.id_vuelo))
+		if (vuelosPublicos.containsKey(nuevoVuelo.id_vuelo))
 			throw new RuntimeException("Id de vuelo ya existe");
+<<<<<<< HEAD
 		vuelosPublicosInternacionales.put(nuevoVuelo.id_vuelo, nuevoVuelo);
 		return nuevoVuelo.id_vuelo + "-PUB";
 
@@ -132,15 +149,117 @@ public class Aerolinea {
 		if (!fechaPosteriorActual(fecha))
 			throw new RuntimeException("la fecha ingresada es anterior a la fecha actual");
 
-		VueloPrivado nuevoVuelo = new VueloPrivado(origen, destino, fecha, dniComprador, tripulantes);
-		nuevoVuelo.Valor(precio, acompaniantes);
+		VueloPrivado VueloNuevo = new VueloPrivado(origen, destino, fecha, dniComprador, tripulantes);
+		 VueloNuevo.valor(precio, tripulantes);
 
 
-		nuevoVuelo.idVuelo = GeneradorId();
-		if (vuelosPublicosNacionales.containsKey(nuevoVuelo.idVuelo))
+		VueloNuevo.idVuelo = GeneradorId();
+		if (vuelosPrivados.containsKey(VueloNuevo.idVuelo))
 			throw new RuntimeException("Id de vuelo ya existe");
-		vuelosPrivados.put(nuevoVuelo.idVuelo, nuevoVuelo);
-		return nuevoVuelo.idVuelo + "-PRI";
+		vuelosPrivados.put(VueloNuevo.idVuelo, VueloNuevo);
+		return VueloNuevo.idVuelo + "-PRI";
+		
+
+	}
+
+//	public Map<Integer, String> asientosDisponiblesOriginal(String codVuelo) { 
+//		
+//		if(!vuelosPublicos.containsKey(codVuelo)) throw new RuntimeException("Vuelo no existe");
+//		Vuelo vuelo = vuelosPublicos.get(codVuelo);
+//	    int[] cantAsientos = vuelo.cantAsientos;
+//	    String[] secciones = {"Turista", "Ejecutivo", "Primera Clase"};
+//	    int numeroAsiento = 1;
+//		
+//	    // Recorrer asientos en cada clase
+//	    for (int i = 0; i < cantAsientos.length; i++) {
+//	        String seccion = secciones[i];  // Asignar el nombre de la clase directamente
+//
+//	        for (int j = 0; j < cantAsientos[i]; j++) {
+//	            if (estaAsientoDisponible(numeroAsiento, codVuelo)) {
+//	                asientosDisponibles.put(numeroAsiento, seccion);
+//	            }
+//	            else {
+//		            numeroAsiento++;
+//		            if(!asientosOcupados.containsKey(numeroAsiento)) {
+//		            	asientosOcupados.put(numeroAsiento,seccion);
+//		            }
+//	            }
+//	        }
+//	    }
+//	    return asientosDisponibles;
+//	}
+//	
+	public boolean estaAsientoDisponible(int numeroAsiento, String codVuelo) {
+		Iterator<Map.Entry<Integer, Pasajero>> iterador = pasajeros.entrySet().iterator();
+		while (iterador.hasNext()) {
+			Map.Entry<Integer, Pasajero> entrada = iterador.next();
+			int clave = entrada.getKey(); // numero de asiento
+			Pasajero valor = entrada.getValue(); // pasajero
+			if (!valor.aOcupar && clave == numeroAsiento && valor.codVuelo.equals(codVuelo)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public Map<Integer, String> generarAsientos(String codVuelo) {
+		if (!vuelosPublicos.containsKey(codVuelo))
+			throw new RuntimeException("Vuelo no existe");
+		Vuelo vuelo = vuelosPublicos.get(codVuelo);
+		int[] cantAsientos = vuelo.cantAsientos;
+		String[] secciones = { "Turista", "Ejecutivo", "Primera Clase" };
+		int numeroAsiento = 1;
+		// Recorrer asientos en cada clase
+		for (int i = 0; i < cantAsientos.length; i++) {
+			String seccion = secciones[i]; // Asignar el nombre de la clase directamente
+			for (int j = 0; j < cantAsientos[i]; j++) {
+				asientos.put(numeroAsiento, seccion);
+			}
+		}
+		return asientos;
+	}
+
+	public Map<Integer, String> asientosDisponibles(String codVuelo) {
+		Iterator<Map.Entry<Integer, String>> iterador = asientos.entrySet().iterator();
+		while (iterador.hasNext()) {
+			Map.Entry<Integer, String> entrada = iterador.next();
+			int numeroAsiento = entrada.getKey(); // Número de asiento
+			if (estaAsientoDisponible(numeroAsiento, codVuelo)) {
+				asientosDisponibles.put(numeroAsiento, codVuelo);
+			}
+
+		}
+		return asientosDisponibles;
+	}
+
+	public int venderPasaje(int dni, String codVuelo, int nroAsiento, boolean aOcupar) {
+		if (!clientes.containsKey(dni))
+			throw new RuntimeException("Cliente no registrado, no se pudo vender el pasaje");
+		int codPasaje = GeneradorIdPasaje();
+		Pasajero nuevoPasajero = new Pasajero(nroAsiento, codVuelo, codPasaje, aOcupar);
+		pasajeros.put(dni, nuevoPasajero);
+
+		return codPasaje;
+	}
+
+	public String consultarSeccionAsiento(int nroAsiento) {
+		Iterator<Map.Entry<Integer, String>> iterador = asientos.entrySet().iterator();
+		while (iterador.hasNext()) {
+			Map.Entry<Integer, String> entrada = iterador.next();
+			String valor = entrada.getValue(); // seccion
+			int clave = entrada.getKey(); // asiento
+			if (clave == nroAsiento) {
+				return valor;
+			}
+		}
+		return "Asiento ingresado invalido";
+	}
+
+	void cancelarPasaje(int dni, String codVuelo, int nroAsiento) {
+		String seccion = consultarSeccionAsiento(nroAsiento);
+		pasajeros.remove(dni, codVuelo);
+		asientosDisponibles.put(nroAsiento, seccion);
+
 	}
 
 }
