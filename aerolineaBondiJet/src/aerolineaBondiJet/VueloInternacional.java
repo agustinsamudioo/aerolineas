@@ -1,6 +1,6 @@
 package aerolineaBondiJet;
 
-public class VueloInternacional extends Vuelo {
+public class VueloInternacional extends VueloPublico {
 	
 	public VueloInternacional(String origen, String destino, String fecha, int tripulantes, double valorRefrigerio,
 			double[] precios, int[] cantAsientos) {

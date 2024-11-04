@@ -32,6 +32,8 @@ public class Vuelo {
 		this.precios = precios;
 		this.cantAsientos = cantAsientos;
 	}
-	
+	public Vuelo() {
+		
+	}
 	
 }

@@ -132,33 +132,68 @@ public class Aerolinea {
 		return codigo;
 	}
 
-//	public Map<Integer, String> asientosDisponiblesOriginal(String codVuelo) { 
-//		
-//		if(!vuelosPublicos.containsKey(codVuelo)) throw new RuntimeException("Vuelo no existe");
-//		Vuelo vuelo = vuelosPublicos.get(codVuelo);
-//	    int[] cantAsientos = vuelo.cantAsientos;
-//	    String[] secciones = {"Turista", "Ejecutivo", "Primera Clase"};
-//	    int numeroAsiento = 1;
-//		
-//	    // Recorrer asientos en cada clase
-//	    for (int i = 0; i < cantAsientos.length; i++) {
-//	        String seccion = secciones[i];  // Asignar el nombre de la clase directamente
-//
-//	        for (int j = 0; j < cantAsientos[i]; j++) {
-//	            if (estaAsientoDisponible(numeroAsiento, codVuelo)) {
-//	                asientosDisponibles.put(numeroAsiento, seccion);
-//	            }
-//	            else {
-//		            numeroAsiento++;
-//		            if(!asientosOcupados.containsKey(numeroAsiento)) {
-//		            	asientosOcupados.put(numeroAsiento,seccion);
-//		            }
-//	            }
-//	        }
-//	    }
-//	    return asientosDisponibles;
-//	}
-//	
+	String VenderVueloPrivado (String origen, String destino, String fecha, int tripulantes,
+			double precio,  int dniComprador, int[] acompaniantes) {
+		//Se verifica que los aeropuertos  de origen y llegada sean nacionales y 
+		//que la fecha ingresada posterior a la actual 
+		if (!aeropuertoNacional(origen))
+			throw new RuntimeException("Aeropuerto ingresado de origen no pertenece a Argentina");
+
+		if (!aeropuertoNacional(destino))			
+			throw new RuntimeException("Aeropuerto ingresado de destino no pertenece a Argentina");
+
+		if (!fechaPosteriorActual(fecha))
+			throw new RuntimeException("la fecha ingresada es anterior a la fecha actual");
+		// Se verifica que el comprador sea cliente de la compañia
+		if (!clientes.containsKey(dniComprador)) {
+			throw new RuntimeException("El comprador del vuelo no esta registrado como cliente de la Aerolinea");
+		}
+		// Se verifica que los acompaniantes sean clientes de la compañia
+		for (int i=0;i<acompaniantes.length;i++) {	
+			if (!clientes.containsKey(acompaniantes[i])) 
+				throw new RuntimeException("El acompañante no esta registrado como cliente de la Aerolinea");
+
+		}
+
+		//Se crea el vuelo privado
+		VueloPrivado VueloNuevo = new VueloPrivado(origen, destino, fecha, dniComprador, tripulantes, precio);
+
+
+		//Se agrega el vuelo creado a la lista de vuelos
+		vuelos.put(VueloNuevo.id_vuelo, VueloNuevo);
+		return VueloNuevo.id_vuelo + "-PRI";
+
+	}
+
+
+
+	//	public Map<Integer, String> asientosDisponiblesOriginal(String codVuelo) { 
+	//		
+	//		if(!vuelosPublicos.containsKey(codVuelo)) throw new RuntimeException("Vuelo no existe");
+	//		Vuelo vuelo = vuelosPublicos.get(codVuelo);
+	//	    int[] cantAsientos = vuelo.cantAsientos;
+	//	    String[] secciones = {"Turista", "Ejecutivo", "Primera Clase"};
+	//	    int numeroAsiento = 1;
+	//		
+	//	    // Recorrer asientos en cada clase
+	//	    for (int i = 0; i < cantAsientos.length; i++) {
+	//	        String seccion = secciones[i];  // Asignar el nombre de la clase directamente
+	//
+	//	        for (int j = 0; j < cantAsientos[i]; j++) {
+	//	            if (estaAsientoDisponible(numeroAsiento, codVuelo)) {
+	//	                asientosDisponibles.put(numeroAsiento, seccion);
+	//	            }
+	//	            else {
+	//		            numeroAsiento++;
+	//		            if(!asientosOcupados.containsKey(numeroAsiento)) {
+	//		            	asientosOcupados.put(numeroAsiento,seccion);
+	//		            }
+	//	            }
+	//	        }
+	//	    }
+	//	    return asientosDisponibles;
+	//	}
+	//	
 	public boolean estaAsientoDisponible(int numeroAsiento, String codVuelo) {
 		Iterator<Map.Entry<Integer, Pasajero>> iterador = pasajeros.entrySet().iterator();
 		while (iterador.hasNext()) {
@@ -297,7 +332,7 @@ public class Aerolinea {
 		if (vuelo instanceof VueloNacional)
 			tipo = "INTERNACIONAL";
 		if (vuelo instanceof VueloPrivado)
-			tipo = "PRIVADO"+"("+((VueloPrivado) vuelo).cant_jets+")";
+			tipo = "PRIVADO"+"("+((VueloPrivado) vuelo).cantidadDeJets+")";
 
 		while (iterador.hasNext()) {
 			Map.Entry<String, Vuelo> entrada = iterador.next();
