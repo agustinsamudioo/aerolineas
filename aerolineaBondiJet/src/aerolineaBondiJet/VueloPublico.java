@@ -4,7 +4,7 @@ public class VueloPublico extends Vuelo{
 
 	int cantSecciones;
 	int capacidadSeccion;
-	Refrigerio refrigerio;
+	double valorRefrigerio;
 	int maximoPasajeros;
 	
 	

@@ -8,12 +8,12 @@ import javax.lang.model.element.NestingKind;
 
 public class Vuelo {
 	String id_vuelo;
-	Aeropuerto origen;
+	String origen;
 	int capacidad;
 //	int cant_pasajeros;
 	int cant_tripulantes;
 	String fechaSalida;
-	Aeropuerto destino;
+	String destino;
 //	HashMap<Integer, Pasajero> pasajeros;
 //	Refrigerio refrigerio;
 //	int max_pasajeros;
@@ -25,8 +25,8 @@ public class Vuelo {
 
 	public Vuelo(String origen, String destino, String fecha, int tripulantes, double[] precios,
 			int[] cantAsientos) {
-		this.origen.nombre = origen;
-		this.destino.nombre = destino;
+		this.origen = origen;
+		this.destino = destino;
 		this.fechaSalida = fecha;
 		this.cant_tripulantes = tripulantes;
 //		this.refrigerio.precio = valorRefrigerio;

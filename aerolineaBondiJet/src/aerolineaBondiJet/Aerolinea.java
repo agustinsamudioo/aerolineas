@@ -35,6 +35,9 @@ public class Aerolinea {
 		this.vuelos = new HashMap<>();
 		this.pasajeros = new HashMap<>();
 		this.aeropuertos = new HashMap<>();
+		this.codigosVuelos = new HashMap<>();
+		this.asientos = new HashMap<>();
+		this.asientosDisponibles = new HashMap<>();
 
 	}
 
@@ -69,7 +72,7 @@ public class Aerolinea {
 			double valorRefrigerio, double[] precios, int[] cantAsientos) {
 		if (!Vuelo.fechaPosteriorActual(fecha))
 			throw new RuntimeException("la fecha ingresada es anterior al presente");
-		if (!Vuelo.fechaPosteriorActual(origen))
+		if (!Aeropuerto.aeropuertoNacional(origen, aeropuertos))
 			throw new RuntimeException("Aeropuerto ingresado no pertenece a Argentina");
 		if (!Aeropuerto.aeropuertoNacional(destino, aeropuertos))
 			throw new RuntimeException("Aeropuerto ingresado no pertenece a Argentina");
@@ -80,7 +83,7 @@ public class Aerolinea {
 		if (vuelos.containsKey(nuevoVuelo.id_vuelo))
 			throw new RuntimeException("Id de vuelo ya existe");
 		vuelos.put(nuevoVuelo.id_vuelo, nuevoVuelo);
-		String texto = "-PUB-NAC";
+		String texto = "-PUB";
 		String codigo = nuevoVuelo.id_vuelo + texto;
 		codigosVuelos.put(nuevoVuelo.id_vuelo, texto);
 		return codigo;
@@ -99,7 +102,7 @@ public class Aerolinea {
 		if (vuelos.containsKey(nuevoVuelo.id_vuelo))
 			throw new RuntimeException("Id de vuelo ya existe");
 		vuelos.put(nuevoVuelo.id_vuelo, nuevoVuelo);
-		String texto = "-PUB-INT";
+		String texto = "-PUB";
 		String codigo = nuevoVuelo.id_vuelo + texto;
 		codigosVuelos.put(nuevoVuelo.id_vuelo, texto);
 		return codigo;
@@ -126,7 +129,8 @@ public class Aerolinea {
 		}
 		//Se crea el vuelo privado
 		VueloPrivado VueloNuevo = new VueloPrivado(origen, destino, fecha, dniComprador, tripulantes, precio);
-
+		if (vuelos.containsKey(VueloNuevo.id_vuelo))
+			throw new RuntimeException("Id de vuelo ya existe");
 		//Se agrega el vuelo creado a la lista de vuelos
 		vuelos.put(VueloNuevo.id_vuelo, VueloNuevo);
 		return VueloNuevo.id_vuelo + "-PRI";
@@ -181,6 +185,8 @@ public class Aerolinea {
 	}
 
 	public Map<Integer, String> asientosDisponibles(String codVuelo) {
+		
+		
 		Iterator<Map.Entry<Integer, String>> iterador = asientos.entrySet().iterator();
 		while (iterador.hasNext()) {
 			Map.Entry<Integer, String> entrada = iterador.next();
@@ -235,7 +241,7 @@ public class Aerolinea {
 			Map.Entry<String, Vuelo> entrada = iterador.next();
 			Vuelo valor = entrada.getValue(); // Objeto vuelo
 			String clave = entrada.getKey(); // codigo de vuelo
-			if (valor.origen.nombre.equals(origen) && valor.destino.nombre.equalsIgnoreCase(destino)) {
+			if (valor.origen.equals(origen) && valor.destino.equalsIgnoreCase(destino)) {
 				if (Vuelo.fechaActualSemana(Fecha, valor.fechaSalida)) {
 					consultarVuelosSimilares.add(clave);
 				}
@@ -269,7 +275,7 @@ public class Aerolinea {
 			Vuelo valor = entrada.getValue(); // objeto vuelo
 			String clave = entrada.getKey(); // codigo de vuelo
 			if (clave.equalsIgnoreCase(codVuelo)) {
-				String detalleVuelo = clave + "-" + valor.origen.nombre + "-" + valor.destino.nombre + "-"
+				String detalleVuelo = clave + "-" + valor.origen + "-" + valor.destino + "-"
 						+ valor.fechaSalida + "-" + tipo;
 				return detalleVuelo;
 

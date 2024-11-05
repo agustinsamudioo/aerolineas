@@ -15,8 +15,8 @@ public class VueloPrivado extends Vuelo {
 	}
 
 	public VueloPrivado(String origen,String destino, String fecha,int dni_comprador, int tripulantes, double precio) {
-		this.origen.nombre=origen;
-		this.destino.nombre=destino;
+		this.origen=origen;
+		this.destino=destino;
 		this.fechaSalida=fecha;
 		this.cant_tripulantes=tripulantes;
 		this.dniComprador= dni_comprador;
