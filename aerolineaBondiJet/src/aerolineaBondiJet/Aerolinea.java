@@ -49,7 +49,7 @@ public class Aerolinea {
 	public void registrarAeropuerto(String nombre, String pais,String provincia, String direccion) {
 		if (aeropuertos.containsKey(nombre))
 			throw new RuntimeException("Nombre de Aeropuerto ya existe");
-		Aeropuerto nuevoAeropuerto = new Aeropuerto(nombre,pais,direccion);
+		Aeropuerto nuevoAeropuerto = new Aeropuerto(nombre,pais,provincia,direccion);
 		aeropuertos.put(nombre, nuevoAeropuerto);
 
 	}

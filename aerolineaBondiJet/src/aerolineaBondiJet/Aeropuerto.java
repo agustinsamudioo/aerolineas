@@ -11,12 +11,12 @@ public class Aeropuerto {
 	String direccion;
 //	HashMap<String, Vuelo>vuelos;
 	
-	public Aeropuerto(String nombre, String pais, String direccion) {
+	public Aeropuerto(String nombre, String pais,String provincia, String direccion) {
 	
 		this.nombre=nombre;
 		this.pais=pais;
-//		this.provincia=provincia;
-//		this.direccion=direccion;
+		this.provincia=provincia;
+		this.direccion=direccion;
 //		this.vuelos=new HashMap<>();
 	}
 
