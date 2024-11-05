@@ -1,11 +1,9 @@
 package aerolineaBondiJet;
 
 public class Refrigerio {
-	int cantidad;
 	double precio;
 
-	public Refrigerio(int cantidad, double precio) {
-		this.cantidad = cantidad;
+	public Refrigerio( double precio) {
 		this.precio = precio;
 	}
 }

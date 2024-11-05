@@ -46,41 +46,14 @@ public class Aerolinea {
 		clientes.put(dni, nuevoCliente);
 	}
 
-	public void registrarAeropuerto(String nombre, String pais, String provincia, String direccion) {
+	public void registrarAeropuerto(String nombre, String pais,String provincia, String direccion) {
 		if (aeropuertos.containsKey(nombre))
 			throw new RuntimeException("Nombre de Aeropuerto ya existe");
-		Aeropuerto nuevoAeropuerto = new Aeropuerto(nombre, pais, provincia, direccion);
+		Aeropuerto nuevoAeropuerto = new Aeropuerto(nombre,pais,direccion);
 		aeropuertos.put(nombre, nuevoAeropuerto);
 
 	}
 
-	public boolean aeropuertoNacional(String nombreAeropuerto) {
-		// creamos un iterador sobrel el entrySet del Hashmap de aeropuertos
-		// esto es para poder recorrer todos los aeropuertos y poder controlarlos
-		if (!aeropuertos.containsKey(nombreAeropuerto))
-			throw new RuntimeException("Aeropuerto no existe");
-		Iterator<Map.Entry<String, Aeropuerto>> iterador = aeropuertos.entrySet().iterator();
-
-		while (iterador.hasNext()) {
-			Map.Entry<String, Aeropuerto> entrada = iterador.next();
-			String clave = entrada.getKey(); // clave, o sea nombre del aeropuerto
-			Aeropuerto valor = entrada.getValue(); // valor, que seria el objeto aeropuerto
-			if (nombreAeropuerto.equalsIgnoreCase(clave) && valor.pais.equalsIgnoreCase("Argentina")) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public boolean fechaPosteriorActual(String fechaS) {
-		// Definimos el formato del String que vamos a recibir
-		DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-		// Convertimos el String a LocalDate
-		LocalDate fecha = LocalDate.parse(fechaS, formato);
-		LocalDate fechaActual = LocalDate.now();
-		// Preguntamos si fecha es mayor a fecha actual
-		return fecha.isAfter(fechaActual);
-	}
 
 	public static synchronized String GeneradorId() {
 		contadorCodigo++;
@@ -94,11 +67,11 @@ public class Aerolinea {
 
 	public String registrarVueloPublicoNacional(String origen, String destino, String fecha, int tripulantes,
 			double valorRefrigerio, double[] precios, int[] cantAsientos) {
-		if (!fechaPosteriorActual(fecha))
+		if (!Vuelo.fechaPosteriorActual(fecha))
 			throw new RuntimeException("la fecha ingresada es anterior al presente");
-		if (!aeropuertoNacional(origen))
+		if (!Vuelo.fechaPosteriorActual(origen))
 			throw new RuntimeException("Aeropuerto ingresado no pertenece a Argentina");
-		if (!aeropuertoNacional(destino))
+		if (!Aeropuerto.aeropuertoNacional(destino, aeropuertos))
 			throw new RuntimeException("Aeropuerto ingresado no pertenece a Argentina");
 		VueloNacional nuevoVuelo = new VueloNacional(origen, destino, fecha, tripulantes, valorRefrigerio, precios,
 				cantAsientos);
@@ -116,7 +89,7 @@ public class Aerolinea {
 	public String registrarVueloPublicoInternacional(String origen, String destino, String fecha, int tripulantes,
 			double valorRefrigerio, int cantRefrigerios, double[] precios, int[] cantAsientos, String[] escalas) {
 
-		if (!fechaPosteriorActual(fecha))
+		if (!Vuelo.fechaPosteriorActual(fecha))
 			throw new RuntimeException("la fecha ingresada es anterior al presente");
 
 		VueloInternacional nuevoVuelo = new VueloInternacional(origen, destino, fecha, tripulantes, valorRefrigerio,
@@ -136,13 +109,11 @@ public class Aerolinea {
 			double precio,  int dniComprador, int[] acompaniantes) {
 		//Se verifica que los aeropuertos  de origen y llegada sean nacionales y 
 		//que la fecha ingresada posterior a la actual 
-		if (!aeropuertoNacional(origen))
+		if (!Aeropuerto.aeropuertoNacional(origen, aeropuertos))
 			throw new RuntimeException("Aeropuerto ingresado de origen no pertenece a Argentina");
-
-		if (!aeropuertoNacional(destino))			
+		if (!Aeropuerto.aeropuertoNacional(destino, aeropuertos))			
 			throw new RuntimeException("Aeropuerto ingresado de destino no pertenece a Argentina");
-
-		if (!fechaPosteriorActual(fecha))
+		if (!Vuelo.fechaPosteriorActual(fecha))
 			throw new RuntimeException("la fecha ingresada es anterior a la fecha actual");
 		// Se verifica que el comprador sea cliente de la compañia
 		if (!clientes.containsKey(dniComprador)) {
@@ -152,12 +123,9 @@ public class Aerolinea {
 		for (int i=0;i<acompaniantes.length;i++) {	
 			if (!clientes.containsKey(acompaniantes[i])) 
 				throw new RuntimeException("El acompañante no esta registrado como cliente de la Aerolinea");
-
 		}
-
 		//Se crea el vuelo privado
 		VueloPrivado VueloNuevo = new VueloPrivado(origen, destino, fecha, dniComprador, tripulantes, precio);
-
 
 		//Se agrega el vuelo creado a la lista de vuelos
 		vuelos.put(VueloNuevo.id_vuelo, VueloNuevo);
@@ -193,24 +161,12 @@ public class Aerolinea {
 	//	    }
 	//	    return asientosDisponibles;
 	//	}
-	//	
-	public boolean estaAsientoDisponible(int numeroAsiento, String codVuelo) {
-		Iterator<Map.Entry<Integer, Pasajero>> iterador = pasajeros.entrySet().iterator();
-		while (iterador.hasNext()) {
-			Map.Entry<Integer, Pasajero> entrada = iterador.next();
-			int clave = entrada.getKey(); // numero de asiento
-			Pasajero valor = entrada.getValue(); // pasajero
-			if (!valor.aOcupar && clave == numeroAsiento && valor.codVuelo.equals(codVuelo)) {
-				return true;
-			}
-		}
-		return false;
-	}
+	//		
 
 	public Map<Integer, String> generarAsientos(String codVuelo) {
 		if (!vuelos.containsKey(codVuelo))
 			throw new RuntimeException("Vuelo no existe");
-		Vuelo vuelo = vuelos.get(codVuelo);
+		VueloPublico vuelo = (VueloPublico) vuelos.get(codVuelo);
 		int[] cantAsientos = vuelo.cantAsientos;
 		String[] secciones = { "Turista", "Ejecutivo", "Primera Clase" };
 		int numeroAsiento = 1;
@@ -229,7 +185,7 @@ public class Aerolinea {
 		while (iterador.hasNext()) {
 			Map.Entry<Integer, String> entrada = iterador.next();
 			int numeroAsiento = entrada.getKey(); // Número de asiento
-			if (estaAsientoDisponible(numeroAsiento, codVuelo)) {
+			if (Seccion.estaAsientoDisponible(numeroAsiento, codVuelo, pasajeros)) {
 				asientosDisponibles.put(numeroAsiento, codVuelo);
 			}
 
@@ -247,21 +203,10 @@ public class Aerolinea {
 		return codPasaje;
 	}
 
-	public String consultarSeccionAsiento(int nroAsiento) {
-		Iterator<Map.Entry<Integer, String>> iterador = asientos.entrySet().iterator();
-		while (iterador.hasNext()) {
-			Map.Entry<Integer, String> entrada = iterador.next();
-			String valor = entrada.getValue(); // seccion
-			int clave = entrada.getKey(); // asiento
-			if (clave == nroAsiento) {
-				return valor;
-			}
-		}
-		return "Asiento ingresado invalido";
-	}
+
 
 	void cancelarPasaje(int dni, String codVuelo, int nroAsiento) {
-		String seccion = consultarSeccionAsiento(nroAsiento);
+		String seccion = Seccion.consultarSeccionAsiento(nroAsiento, asientos);
 		Iterator<Map.Entry<Integer, Pasajero>> iterador = pasajeros.entrySet().iterator();
 		while (iterador.hasNext()) {
 			Map.Entry<Integer, Pasajero> entrada = iterador.next();
@@ -282,21 +227,6 @@ public class Aerolinea {
 	 */
 	// origen es un aeropuerto, destino es otro aeropuerto
 
-	public boolean fecha_actual_semana(String Fecha, String fechaVuelo) {
-		// Definimos el formato del String que vamos a recibir
-		DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-		// Convertimos el String a LocalDate
-		LocalDate fechaDate = LocalDate.parse(Fecha, formato);
-		LocalDate fechavueloDate = LocalDate.parse(fechaVuelo, formato);
-		LocalDate fechaSemanaDespuesDate = fechaDate.plusWeeks(1);
-
-		// Preguntamos si la fecha del vuelo esta entre la fecha dada y hasta una semana
-		// despues
-		if (!fechavueloDate.isBefore(fechaDate) && !fechavueloDate.isAfter(fechaSemanaDespuesDate)) {
-			return true;
-		}
-		return false;
-	}
 
 	public List<String> consultarVuelosSimilares(String origen, String destino, String Fecha) {
 		Iterator<Map.Entry<String, Vuelo>> iterador = vuelos.entrySet().iterator();
@@ -306,7 +236,7 @@ public class Aerolinea {
 			Vuelo valor = entrada.getValue(); // Objeto vuelo
 			String clave = entrada.getKey(); // codigo de vuelo
 			if (valor.origen.nombre.equals(origen) && valor.destino.nombre.equalsIgnoreCase(destino)) {
-				if (fecha_actual_semana(Fecha, valor.fecha_salida_vuelo)) {
+				if (Vuelo.fechaActualSemana(Fecha, valor.fechaSalida)) {
 					consultarVuelosSimilares.add(clave);
 				}
 			}
@@ -340,7 +270,7 @@ public class Aerolinea {
 			String clave = entrada.getKey(); // codigo de vuelo
 			if (clave.equalsIgnoreCase(codVuelo)) {
 				String detalleVuelo = clave + "-" + valor.origen.nombre + "-" + valor.destino.nombre + "-"
-						+ valor.fecha_salida_vuelo + "-" + tipo;
+						+ valor.fechaSalida + "-" + tipo;
 				return detalleVuelo;
 
 			}
@@ -369,7 +299,7 @@ public class Aerolinea {
 			Map.Entry<Integer, Pasajero> entrada = iterador.next();
 			Pasajero valor = entrada.getValue(); // objeto pasajero
 			int clave = entrada.getKey(); // dni
-			formato += clave + " - " + valor.nombreCliente + " - " + valor.telefono + " - ";
+			formato += clave + " - " + valor.nombre + " - " + valor.telefono + " - ";
 			vuelosCancelados.add(formato);
 		}
 		return vuelosCancelados;

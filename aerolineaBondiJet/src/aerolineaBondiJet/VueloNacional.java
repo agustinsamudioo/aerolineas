@@ -1,13 +1,14 @@
 package aerolineaBondiJet;
 
-public class VueloNacional extends Vuelo {
-	int cant_secciones=2;
-	int max_pasajeros=170;
-
+public class VueloNacional extends VueloPublico {
+	
+	
 	public VueloNacional(String origen, String destino, String fecha, int tripulantes, double valorRefrigerio,
 			double[] precios, int[] cantAsientos) {
-		super(origen, destino, fecha, tripulantes, valorRefrigerio, precios, cantAsientos);
-
+		super(origen, destino, fecha, tripulantes, precios, cantAsientos);
+		this.refrigerio.precio=valorRefrigerio;
+		this.cantSecciones=2;
+												
 	}
 
 }

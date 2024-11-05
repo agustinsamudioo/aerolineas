@@ -4,25 +4,26 @@ import java.util.HashMap;
 
 public class VueloPrivado extends Vuelo {
 	public String id_vuelo;
-	int comprador;
-	HashMap<Integer, Pasajero> pasajerosPriv;
+	int dniComprador;
+	HashMap<Integer, Pasajero> pasajeros;
 	double costoTotal;
 	String cantidadDeJets;
 
-	public VueloPrivado(String origen, String destino, String fecha, int tripulantes, double valorRefrigerio,
+	public VueloPrivado(String origen, String destino, String fecha, int tripulantes,
 			double[] precios, int[] cantAsientos) {
-		super(origen, destino, fecha, tripulantes, valorRefrigerio, precios, cantAsientos);
+		super(origen, destino, fecha, tripulantes, precios, cantAsientos);
 	}
 
 	public VueloPrivado(String origen,String destino, String fecha,int dni_comprador, int tripulantes, double precio) {
 		this.origen.nombre=origen;
 		this.destino.nombre=destino;
-		this.fecha_salida_vuelo=fecha;
+		this.fechaSalida=fecha;
 		this.cant_tripulantes=tripulantes;
-		this.comprador= dni_comprador;
+		this.dniComprador= dni_comprador;
 		id_vuelo = Aerolinea.GeneradorId();
-		this.cantidadDeJets = JetsNecesarios(tripulantes);
+		this.cantidadDeJets = jetsNecesarios(tripulantes);
 		this.costoTotal = calcularCosto(precio,tripulantes);
+		HashMap<Integer, Pasajero> pasajeros =  new HashMap<>();
 
 	}
 
@@ -31,7 +32,7 @@ public class VueloPrivado extends Vuelo {
 	}
 	
 	
-	public String JetsNecesarios(int tripulantes) {
+	public String jetsNecesarios(int tripulantes) {
 		int capacidadJet=15;
 
 		double cantidadDeJets =  tripulantes / capacidadJet ;
@@ -43,7 +44,7 @@ public class VueloPrivado extends Vuelo {
 	
 	public double calcularCosto(double precio, int tripulantes) {
 		
-		double jets= Double.parseDouble(JetsNecesarios(tripulantes));
+		double jets= Double.parseDouble(jetsNecesarios(tripulantes));
 		double valor = precio * jets;
 		double impuesto = valor*0.3;
 		double costo = valor + impuesto;

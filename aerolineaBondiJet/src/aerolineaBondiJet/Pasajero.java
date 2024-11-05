@@ -1,5 +1,9 @@
 package aerolineaBondiJet;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 public class Pasajero extends Cliente {
 	int num_asiento;
 	String codVuelo;
@@ -10,4 +14,5 @@ public class Pasajero extends Cliente {
 		super(codPasaje, codVuelo, codVuelo);
 
 	}
+
 }
