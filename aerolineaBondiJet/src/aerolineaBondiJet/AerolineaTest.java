@@ -1,4 +1,5 @@
 package aerolineaBondiJet;
+
 import static org.junit.Assert.*;
 
 import java.util.List;
@@ -203,7 +204,8 @@ public class AerolineaTest {
 	    // El cliente compra un vuelo privado de Aeroparque a Bariloche para 40 personas
 	    String fechaVueloPrivado = "10/11/2024";
 	    double precioVueloPrivado = 500000.0;
-	    double recaudacionEsperada= 1500000.0; // porque Necesita 3 aviones para poder llevar a los 40 pasajeros.
+	    // porque Necesita 3 aviones para poder llevar a los 40 pasajeros y se le suma el 30% de impuestos.
+	    double recaudacionEsperada= 1950000.0; 
 	
 	    // Vender el vuelo privado
 	    String codVueloPrivado = aerolinea.VenderVueloPrivado("Aeroparque", "Bariloche", fechaVueloPrivado, 4, precioVueloPrivado, 98765432, acompaniantes);
@@ -226,11 +228,12 @@ public class AerolineaTest {
 	        aerolinea.venderPasaje(dni, codVuelo, i, false);
 	    }
 	    
-	    double recaudacionEsperada=0.0;
-	    for (int i=0; i<precios.length;i++)
-	    	recaudacionEsperada += precios[i] * cantAsientos[i];
-	    recaudacionEsperada += 140 * 3 * 2000;  // 140 pasajeros * 3 refrigerios * 2000 cada refrigerio 
-	
+	    // Al estar vendido por completo, 
+	    // se suman el costo de todos los asiento que cambia segun la sección..
+	    // mas el costo de los refrigerios para todos los pasajeros
+	    // 140 pasajeros * 3 refrigerios * 2000 cada refrigerio 
+	    // y por ultimo sumo el 20 porciento de impuestos.
+	    double recaudacionEsperada=4488000.0;
 	    assertEquals(recaudacionEsperada, aerolinea.totalRecaudado("Barajas"), 0.1);
 	}
 	
