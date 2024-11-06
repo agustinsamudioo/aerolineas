@@ -20,7 +20,7 @@ public class Aerolinea {
 	private HashMap<String, Vuelo> vuelos; // id vuelo, objeto vuelo
 	private HashMap<Integer, Pasajero> pasajeros;
 	private HashMap<String, Aeropuerto> aeropuertos;
-	private HashMap<String, String> codigosVuelos; // id vuelo , texto PUB o PRIV
+//	private HashMap<String, String> codigosVuelos; // id vuelo , texto PUB o PRIV
 	private HashMap<Integer, String> asientos;
 	private HashMap<Integer, String> asientosDisponibles; // clave: numero de asiento, valor: seccion
 	// private HashMap<Integer, String> asientosOcupados; // clave: numero de
@@ -35,7 +35,7 @@ public class Aerolinea {
 		this.vuelos = new HashMap<>();
 		this.pasajeros = new HashMap<>();
 		this.aeropuertos = new HashMap<>();
-		this.codigosVuelos = new HashMap<>();
+//		this.codigosVuelos = new HashMap<>();
 		this.asientos = new HashMap<>();
 		this.asientosDisponibles = new HashMap<>();
 
@@ -85,7 +85,7 @@ public class Aerolinea {
 		vuelos.put(nuevoVuelo.id_vuelo, nuevoVuelo);
 		String texto = "-PUB";
 		String codigo = nuevoVuelo.id_vuelo + texto;
-		codigosVuelos.put(nuevoVuelo.id_vuelo, texto);
+//		codigosVuelos.put(nuevoVuelo.id_vuelo, texto);
 		return codigo;
 	}
 
@@ -104,7 +104,7 @@ public class Aerolinea {
 		vuelos.put(nuevoVuelo.id_vuelo, nuevoVuelo);
 		String texto = "-PUB";
 		String codigo = nuevoVuelo.id_vuelo + texto;
-		codigosVuelos.put(nuevoVuelo.id_vuelo, texto);
+//		codigosVuelos.put(nuevoVuelo.id_vuelo, texto);
 		return codigo;
 	}
 
@@ -136,36 +136,6 @@ public class Aerolinea {
 		return VueloNuevo.id_vuelo + "-PRI";
 
 	}
-
-
-
-	//	public Map<Integer, String> asientosDisponiblesOriginal(String codVuelo) { 
-	//		
-	//		if(!vuelosPublicos.containsKey(codVuelo)) throw new RuntimeException("Vuelo no existe");
-	//		Vuelo vuelo = vuelosPublicos.get(codVuelo);
-	//	    int[] cantAsientos = vuelo.cantAsientos;
-	//	    String[] secciones = {"Turista", "Ejecutivo", "Primera Clase"};
-	//	    int numeroAsiento = 1;
-	//		
-	//	    // Recorrer asientos en cada clase
-	//	    for (int i = 0; i < cantAsientos.length; i++) {
-	//	        String seccion = secciones[i];  // Asignar el nombre de la clase directamente
-	//
-	//	        for (int j = 0; j < cantAsientos[i]; j++) {
-	//	            if (estaAsientoDisponible(numeroAsiento, codVuelo)) {
-	//	                asientosDisponibles.put(numeroAsiento, seccion);
-	//	            }
-	//	            else {
-	//		            numeroAsiento++;
-	//		            if(!asientosOcupados.containsKey(numeroAsiento)) {
-	//		            	asientosOcupados.put(numeroAsiento,seccion);
-	//		            }
-	//	            }
-	//	        }
-	//	    }
-	//	    return asientosDisponibles;
-	//	}
-	//		
 
 	public Map<Integer, String> generarAsientos(String codVuelo) {
 		if (!vuelos.containsKey(codVuelo))
