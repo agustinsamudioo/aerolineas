@@ -20,11 +20,9 @@ public class Aerolinea {
 	private HashMap<String, Vuelo> vuelos; // id vuelo, objeto vuelo
 	private HashMap<Integer, Pasajero> pasajeros;
 	private HashMap<String, Aeropuerto> aeropuertos;
-//	private HashMap<String, String> codigosVuelos; // id vuelo , texto PUB o PRIV
 	private HashMap<Integer, String> asientos;
 	private HashMap<Integer, String> asientosDisponibles; // clave: numero de asiento, valor: seccion
-	// private HashMap<Integer, String> asientosOcupados; // clave: numero de
-	// asiento, valor: seccion
+
 	private static int contadorCodigo = 0;
 	private static int contadorCodigoPasaje = 0;
 
@@ -35,7 +33,7 @@ public class Aerolinea {
 		this.vuelos = new HashMap<>();
 		this.pasajeros = new HashMap<>();
 		this.aeropuertos = new HashMap<>();
-//		this.codigosVuelos = new HashMap<>();
+
 		this.asientos = new HashMap<>();
 		this.asientosDisponibles = new HashMap<>();
 
@@ -85,7 +83,7 @@ public class Aerolinea {
 		vuelos.put(nuevoVuelo.id_vuelo, nuevoVuelo);
 		String texto = "-PUB";
 		String codigo = nuevoVuelo.id_vuelo + texto;
-//		codigosVuelos.put(nuevoVuelo.id_vuelo, texto);
+
 		return codigo;
 	}
 
@@ -104,7 +102,7 @@ public class Aerolinea {
 		vuelos.put(nuevoVuelo.id_vuelo, nuevoVuelo);
 		String texto = "-PUB";
 		String codigo = nuevoVuelo.id_vuelo + texto;
-//		codigosVuelos.put(nuevoVuelo.id_vuelo, texto);
+
 		return codigo;
 	}
 
@@ -196,12 +194,6 @@ public class Aerolinea {
 		throw new RuntimeException("No se pudo cancelar el pasaje");
 	}
 
-	/**
-	 * - 11. devuelve una lista de códigos de vuelos. que estén entre fecha dada y
-	 * hasta una semana despues. La lista estará vacía si no se encuentran vuelos
-	 * similares. La Fecha es la fecha de salida.
-	 */
-	// origen es un aeropuerto, destino es otro aeropuerto
 
 
 	public List<String> consultarVuelosSimilares(String origen, String destino, String Fecha) {
@@ -221,14 +213,7 @@ public class Aerolinea {
 		return consultarVuelosSimilares;
 	}
 
-	/**
-	 * - 15 Detalle de un vuelo devuelve un texto con el detalle un vuelo en
-	 * particular. Formato del String: CodigoVuelo - Nombre Aeropuerto de salida -
-	 * Nombre Aeropuerto de llegada - fecha de salida - [NACIONAL /INTERNACIONAL /
-	 * PRIVADO + cantidad de jets necesarios]. --> Ejemplo: . 545-PUB - Bariloche -
-	 * Jujuy - 10/11/2024 - NACIONAL . 103-PUB - Ezeiza - Madrid - 15/11/2024 -
-	 * INTERNACIONAL . 222-PRI - Ezeiza - Tierra del Fuego - 3/12/2024 - PRIVADO (3)
-	 */
+
 	public String detalleDeVuelo(String codVuelo) {
 		Iterator<Map.Entry<String, Vuelo>> iterador = vuelos.entrySet().iterator();
 		Vuelo vuelo = vuelos.get(codVuelo);
