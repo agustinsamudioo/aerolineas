@@ -71,17 +71,13 @@ public class Aerolinea implements IAerolinea {
 			throw new RuntimeException("Aeropuerto ingresado no pertenece a Argentina");
 		VueloNacional nuevoVuelo = new VueloNacional(origen, destino, fecha, tripulantes, valorRefrigerio, precios,
 				cantAsientos);
-		nuevoVuelo.id_vuelo = GeneradorId();
-
 		
-		String texto = "-PUB";
-		String codigo = nuevoVuelo.id_vuelo + texto;
-		if (vuelos.containsKey(codigo))
+		String id = GeneradorId();
+		String codigo = id + "-PUB";
+		nuevoVuelo.id_vuelo=codigo;
+		if (vuelos.containsKey(nuevoVuelo.id_vuelo))
 			throw new RuntimeException("Id de vuelo ya existe");
-		vuelos.put(nuevoVuelo.id_vuelo + texto, nuevoVuelo);
-
-		
-
+		vuelos.put(nuevoVuelo.id_vuelo, nuevoVuelo);
 		return codigo;
 	}
 
@@ -94,15 +90,12 @@ public class Aerolinea implements IAerolinea {
 		VueloInternacional nuevoVuelo = new VueloInternacional(origen, destino, fecha, tripulantes, valorRefrigerio,
 				precios, cantAsientos);
 
-		nuevoVuelo.id_vuelo = GeneradorId();
-		
-		String texto = "-PUB";
-		String codigo = nuevoVuelo.id_vuelo + texto;
-		if (vuelos.containsKey(codigo))
+		String id = GeneradorId();
+		String codigo = id + "-PUB";
+		nuevoVuelo.id_vuelo=codigo;
+		if (vuelos.containsKey(nuevoVuelo.id_vuelo))
 			throw new RuntimeException("Id de vuelo ya existe");
-		vuelos.put(nuevoVuelo.id_vuelo + texto, nuevoVuelo);
-		
-
+		vuelos.put(nuevoVuelo.id_vuelo, nuevoVuelo);
 		return codigo;
 	}
 
@@ -129,10 +122,12 @@ public class Aerolinea implements IAerolinea {
 		VueloPrivado vueloNuevo = new VueloPrivado(origen, destino, fecha, dniComprador, tripulantes, precio);
 
 		//Se agrega el vuelo creado a la lista de vuelos
-		String codigo = vueloNuevo.id_vuelo + "-PRI";
-		if (vuelos.containsKey(codigo))
+		String id = GeneradorId();
+		String codigo = id + "-PRI";
+		vueloNuevo.id_vuelo=codigo;
+		if (vuelos.containsKey(vueloNuevo.id_vuelo))
 			throw new RuntimeException("Id de vuelo ya existe");
-		vuelos.put(codigo, vueloNuevo);
+		vuelos.put(vueloNuevo.id_vuelo, vueloNuevo);
 		return codigo;
 
 	}
@@ -155,7 +150,11 @@ public class Aerolinea implements IAerolinea {
 	}
 
 	public Map<Integer, String> asientosDisponibles(String codVuelo) {
-		
+		 Vuelo vuelo = vuelos.get(codVuelo);
+		 
+		    if (vuelo == null) {
+		    	throw new RuntimeException("Vuelo no existe");
+		    }
 		
 		Iterator<Map.Entry<Integer, String>> iterador = asientos.entrySet().iterator();
 		while (iterador.hasNext()) {
