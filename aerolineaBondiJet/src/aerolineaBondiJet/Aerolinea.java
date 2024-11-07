@@ -1,18 +1,12 @@
 package aerolineaBondiJet;
 
-import java.lang.reflect.UndeclaredThrowableException;
-import java.nio.channels.NonReadableChannelException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.plaf.basic.BasicInternalFrameTitlePane.IconifyAction;
-
-public class Aerolinea {
+public class Aerolinea implements IAerolinea {
 
 	String nombre;
 	String cuit;
@@ -26,6 +20,7 @@ public class Aerolinea {
 	private static int contadorCodigo = 0;
 	private static int contadorCodigoPasaje = 0;
 
+	
 	public Aerolinea(String nombre, String cuit) {
 		this.nombre = nombre;
 		this.cuit = cuit;
@@ -78,11 +73,14 @@ public class Aerolinea {
 				cantAsientos);
 		nuevoVuelo.id_vuelo = GeneradorId();
 
-		if (vuelos.containsKey(nuevoVuelo.id_vuelo))
-			throw new RuntimeException("Id de vuelo ya existe");
-		vuelos.put(nuevoVuelo.id_vuelo, nuevoVuelo);
+		
 		String texto = "-PUB";
 		String codigo = nuevoVuelo.id_vuelo + texto;
+		if (vuelos.containsKey(codigo))
+			throw new RuntimeException("Id de vuelo ya existe");
+		vuelos.put(nuevoVuelo.id_vuelo + texto, nuevoVuelo);
+
+		
 
 		return codigo;
 	}
@@ -97,16 +95,18 @@ public class Aerolinea {
 				precios, cantAsientos);
 
 		nuevoVuelo.id_vuelo = GeneradorId();
-		if (vuelos.containsKey(nuevoVuelo.id_vuelo))
-			throw new RuntimeException("Id de vuelo ya existe");
-		vuelos.put(nuevoVuelo.id_vuelo, nuevoVuelo);
+		
 		String texto = "-PUB";
 		String codigo = nuevoVuelo.id_vuelo + texto;
+		if (vuelos.containsKey(codigo))
+			throw new RuntimeException("Id de vuelo ya existe");
+		vuelos.put(nuevoVuelo.id_vuelo + texto, nuevoVuelo);
+		
 
 		return codigo;
 	}
 
-	String VenderVueloPrivado (String origen, String destino, String fecha, int tripulantes,
+	public String VenderVueloPrivado (String origen, String destino, String fecha, int tripulantes,
 			double precio,  int dniComprador, int[] acompaniantes) {
 		//Se verifica que los aeropuertos  de origen y llegada sean nacionales y 
 		//que la fecha ingresada posterior a la actual 
@@ -126,12 +126,14 @@ public class Aerolinea {
 				throw new RuntimeException("El acompañante no esta registrado como cliente de la Aerolinea");
 		}
 		//Se crea el vuelo privado
-		VueloPrivado VueloNuevo = new VueloPrivado(origen, destino, fecha, dniComprador, tripulantes, precio);
-		if (vuelos.containsKey(VueloNuevo.id_vuelo))
-			throw new RuntimeException("Id de vuelo ya existe");
+		VueloPrivado vueloNuevo = new VueloPrivado(origen, destino, fecha, dniComprador, tripulantes, precio);
+
 		//Se agrega el vuelo creado a la lista de vuelos
-		vuelos.put(VueloNuevo.id_vuelo, VueloNuevo);
-		return VueloNuevo.id_vuelo + "-PRI";
+		String codigo = vueloNuevo.id_vuelo + "-PRI";
+		if (vuelos.containsKey(codigo))
+			throw new RuntimeException("Id de vuelo ya existe");
+		vuelos.put(codigo, vueloNuevo);
+		return codigo;
 
 	}
 
@@ -179,7 +181,7 @@ public class Aerolinea {
 
 
 
-	void cancelarPasaje(int dni, String codVuelo, int nroAsiento) {
+	public void cancelarPasaje(int dni, String codVuelo, int nroAsiento) {
 		String seccion = Seccion.consultarSeccionAsiento(nroAsiento, asientos);
 		Iterator<Map.Entry<Integer, Pasajero>> iterador = pasajeros.entrySet().iterator();
 		while (iterador.hasNext()) {
@@ -214,30 +216,60 @@ public class Aerolinea {
 	}
 
 
+	/**
+	 * - 15 Detalle de un vuelo devuelve un texto con el detalle un vuelo en
+	 * particular. Formato del String: CodigoVuelo - Nombre Aeropuerto de salida -
+	 * Nombre Aeropuerto de llegada - fecha de salida - [NACIONAL /INTERNACIONAL /
+	 * PRIVADO + cantidad de jets necesarios]. --> Ejemplo: . 545-PUB - Bariloche -
+	 * Jujuy - 10/11/2024 - NACIONAL . 103-PUB - Ezeiza - Madrid - 15/11/2024 -
+	 * INTERNACIONAL . 222-PRI - Ezeiza - Tierra del Fuego - 3/12/2024 - PRIVADO (3)
+	 */
+//	public String detalleDeVuelo(String codVuelo) {
+//		Iterator<Map.Entry<String, Vuelo>> iterador = vuelos.entrySet().iterator();
+//		Vuelo vuelo = vuelos.get(codVuelo);
+//		String tipo="";
+//		if (vuelo instanceof VueloInternacional)
+//			tipo = "INTERNACIONAL";
+//		if (vuelo instanceof VueloNacional)
+//			tipo = "NACIONAL";
+//		if (vuelo instanceof VueloPrivado)
+//			tipo = "PRIVADO"+"("+((VueloPrivado) vuelo).cantidadDeJets+")";
+//
+//		while (iterador.hasNext()) {
+//			Map.Entry<String, Vuelo> entrada = iterador.next();
+//			Vuelo valor = entrada.getValue(); // objeto vuelo
+//			String clave = entrada.getKey(); // codigo de vuelo
+//			if (clave.equalsIgnoreCase(codVuelo)) {
+//				String detalleVuelo = clave + "-" + valor.origen + "-" + valor.destino + "-"
+//						+ valor.fechaSalida + "-" + tipo;
+//				return detalleVuelo;
+//
+//			}
+//		}
+//		return "Codigo de vuelo no existe";
+//	}
+
 	public String detalleDeVuelo(String codVuelo) {
-		Iterator<Map.Entry<String, Vuelo>> iterador = vuelos.entrySet().iterator();
-		Vuelo vuelo = vuelos.get(codVuelo);
-		String tipo="";
-		if (vuelo instanceof VueloInternacional)
-			tipo = "NACIONAL";
-		if (vuelo instanceof VueloNacional)
-			tipo = "INTERNACIONAL";
-		if (vuelo instanceof VueloPrivado)
-			tipo = "PRIVADO"+"("+((VueloPrivado) vuelo).cantidadDeJets+")";
+	    Vuelo vuelo = vuelos.get(codVuelo);
+	 
+	    if (vuelo == null) {
+	        return "Codigo de vuelo no existe";
+	    }
+	    
+	    String tipo = "";
+	    if (vuelo instanceof VueloInternacional) {
+	        tipo = "INTERNACIONAL";
+	    } else if (vuelo instanceof VueloNacional) {
+	        tipo = "NACIONAL";
+	    } else if (vuelo instanceof VueloPrivado) {
+	        tipo = "PRIVADO (" + ((VueloPrivado) vuelo).cantidadDeJets + ")";
+	    }
+	    
+	    return codVuelo + " - " + vuelo.origen + " - " + vuelo.destino + " - " +
+	       vuelo.fechaSalida + " - " + tipo;
 
-		while (iterador.hasNext()) {
-			Map.Entry<String, Vuelo> entrada = iterador.next();
-			Vuelo valor = entrada.getValue(); // objeto vuelo
-			String clave = entrada.getKey(); // codigo de vuelo
-			if (clave.equalsIgnoreCase(codVuelo)) {
-				String detalleVuelo = clave + "-" + valor.origen + "-" + valor.destino + "-"
-						+ valor.fechaSalida + "-" + tipo;
-				return detalleVuelo;
-
-			}
-		}
-		return "Codigo de vuelo no existe";
 	}
+
 
 	/**
 	 * - 13 Cancela un vuelo completo conociendo su codigo. Los pasajes se
@@ -251,7 +283,7 @@ public class Aerolinea {
 	 * 11111111 - Juan - 33333333 - CANCELADO . 11234126 - Jonathan - 33333311 -
 	 * 545-PUB
 	 */
-	List<String> cancelarVuelo(String codVuelo) {
+	public List<String> cancelarVuelo(String codVuelo) {
 		List<String> vuelosCancelados = new ArrayList<String>();
 		String formato = "";
 		Iterator<Map.Entry<Integer, Pasajero>> iterador = pasajeros.entrySet().iterator();
@@ -264,5 +296,24 @@ public class Aerolinea {
 			vuelosCancelados.add(formato);
 		}
 		return vuelosCancelados;
+	}
+
+	@Override
+	public void Aerolinea(String nombre, String CUIT) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void cancelarPasaje(int dni, int codPasaje) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public double totalRecaudado(String destino) {
+		
+		
+		return 0;
 	}
 }

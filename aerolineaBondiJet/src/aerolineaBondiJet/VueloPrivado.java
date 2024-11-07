@@ -30,20 +30,22 @@ public class VueloPrivado extends Vuelo {
 	public String detallesDelVuelo() {
 		return "Id del vuelo:"+ id_vuelo;
 	}
-	
-	
+
+
 	public String jetsNecesarios(int tripulantes) {
 		int capacidadJet=15;
 
-		double cantidadDeJets =  tripulantes / capacidadJet ;
+		double cantidadDeJets = 1.0;
+		cantidadDeJets +=  tripulantes / capacidadJet ;
 		cantidadDeJets = Math.ceil(cantidadDeJets); //redondea hacia el entero superior.
-		String Jets = String.valueOf(cantidadDeJets); //convierte a String para poder usarse en funcion detalleDelVuelo
+		int cantidadDeJets2 = (int) cantidadDeJets;
+		String Jets = String.valueOf(cantidadDeJets2); //convierte a String para poder usarse en funcion detalleDelVuelo
 		return Jets;
 	}
-	
-	
+
+
 	public double calcularCosto(double precio, int tripulantes) {
-		
+
 		double jets= Double.parseDouble(jetsNecesarios(tripulantes));
 		double valor = precio * jets;
 		double impuesto = valor*0.3;
